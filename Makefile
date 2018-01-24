@@ -39,6 +39,7 @@ endif
 .PHONY: clean
 clean:
 	-rm -f $(OBJ)
+	-rm -f $(SRC_DIR)/*.hpp.gch
 ifeq ($(C_MODE), R)
 	mv $(NAME) $(REL_DIR)
 else
