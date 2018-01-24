@@ -4,7 +4,6 @@
 cNode::cNode() {
     // Alloc Mem
     _connections = new std::vector<sConnection>();
-
 }
 
 // -- addConnection --
@@ -16,15 +15,13 @@ void cNode::addConnection(sConnection con) {
 
 // -- getConnections --
 // Methode gibt alle Verbindungen des aktuellen Knotens zurück
-std::vector<sConnection> cNode::getConnections() {
+std::vector<cNode::sConnection> cNode::getConnections() {
     return *_connections;
 }
 
 // -- Destruktor --
 cNode::~cNode() {
     // Free Mem
-    for(auto i : *_connections)
-        SAFE_DELETE(i);
     SAFE_DELETE(_connections);
 
 }

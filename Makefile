@@ -17,7 +17,7 @@ D_F := -g
 # Source Dateien
 SRC := $(SRC_DIR)/*.cpp
 HED := $(SRC_DIR)/*.hpp
-OBJ := *.o
+OBJ := main.o cGraph.o cNode.o
 
 all: $(OBJ)
 ifeq ($(C_MODE), R)
@@ -30,10 +30,10 @@ endif
 $(OBJ): $(SRC_DIR)
 ifeq ($(C_MODE), R)
 	$(CXX) $(C_F) $(SRC)
-	-$(CXX) $(C_F) $(HED)
+	$(CXX) $(C_F) $(HED)
 else
 	$(CXX) $(C_F) $(D_F) $(SRC)
-	-$(CXX) $(C_F) $(D_F) $(HED)
+	$(CXX) $(C_F) $(D_F) $(HED)
 endif
 
 .PHONY: clean

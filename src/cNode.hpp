@@ -3,14 +3,14 @@
 
 // Includes
 #include<vector>
+#include"common.hpp"
 
 // cNode
 class cNode {
 
     // Verbindungsstruktur
     struct sConnection {
-        cNode *n1; // Knoten 1
-        cNode *n2; // Knoten 2
+        cNode *n; // Knoten auf den verwiesen wird
         float weight; // Gewichtung der Verbindung
     };
 
