@@ -1,9 +1,19 @@
 #include"cNode.hpp"
 
 // -- Konstruktor --
-cNode::cNode() {
+cNode::cNode(std::string id) {
     // Alloc Mem
     _connections = new std::vector<sConnection>();
+    _id = new std::string();
+
+    // Werte setzen
+    *_id = id;
+}
+
+// -- getID --
+// Methdode gibt die ID des Knotens zurück
+std::string cNode::getID() {
+    return *_id;
 }
 
 // -- addConnection --
@@ -22,6 +32,8 @@ std::vector<cNode::sConnection> cNode::getConnections() {
 // -- Destruktor --
 cNode::~cNode() {
     // Free Mem
-    SAFE_DELETE(_connections);
+    _connections->clear(); // Alle Verbindunge löschen
+    SAFE_DELETE(_connections); // _connections freigeben
+    SAFE_DELETE(_id); // id freigeben
 
 }

@@ -10,8 +10,8 @@ C_MODE := R
 
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14
-L_F := -o $(NAME)
+C_F := -c -std=c++14 -Wall
+L_F := -o $(NAME) -Wall
 D_F := -g
 
 # Source Dateien

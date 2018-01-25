@@ -3,7 +3,8 @@
 
 // Includes
 #include<iostream>
-#include<map>
+#include<string>
+#include<vector>
 #include"cNode.hpp"
 
 // cGraph
@@ -17,12 +18,12 @@ public:
     // -- Public Methods --
     void addNode(std::string id); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
+    void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
 
 private:
 
     // -- Private Vars --
-    std::map<std::string, cNode*> *_nodes; // Map speicher alle Knoten und deren IDs
-    std::map<std::string, cNode*>::iterator _nodeIt; // Iterator der Node Map
+    std::vector<cNode*> *_nodes;
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück
