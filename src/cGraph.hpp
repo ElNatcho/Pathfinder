@@ -29,17 +29,20 @@ private:
     // -- Private Vars --
     std::vector<cNode*> *_nodes; // Vector speichert alle Knoten
 
-    std::map<std::string, float> *_dist; // Methode speichert die Entfernungen zu den anderen Knoten
-    std::map<std::string, float>::iterator _dIt; // Iterator der Entfernungsmap
-    cNode *_startNode;
+    struct distData {  // Entfernungsdaten zum Startknoten
+        float dist;    // Entfernung zum Startknoten
+        cNode *origin; // Knoten von dem aus man den aktuellen Knoten erreichen kann
+    };
 
-
+    std::map<std::string, distData> *_dist; // Methode speichert die Entfernungen zu den anderen Knoten
+    std::map<std::string, distData>::iterator _dIt; // Iterator der Entfernungsmap
+    cNode *_startNode; // Knoten bei dem der Pfad gestartet wird
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück
 
     bool _initDistances(std::string snode); // Methode initialisiert die Entfernungen
-    void _doStep(std::string id); // Methode führt einen "Schritt" im Graphen aus
+    bool _doStep(std::string id); // Methode führt einen "Schritt" im Graphen aus
 
 };
 

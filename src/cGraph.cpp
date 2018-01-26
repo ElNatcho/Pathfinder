@@ -4,7 +4,7 @@
 cGraph::cGraph() {
     // Alloc Mem
     _nodes = new std::vector<cNode*>();
-    _dist = new std::map<std::string, float>();
+    _dist = new std::map<std::string, distData>();
 
 }
 
@@ -37,8 +37,16 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
 // @param id_1, id_2: Knoten zwischen denen ein Pfad erstellt werden soll
 void cGraph::findPath(std::string id_1, std::string id_2) {
     if(!_initDistances(id_1)) { /* TODO: Error Handling */}
+    if(_dist->find(id_2) == _dist->end()) { /* TODO: Error Handling */} // Prüfen ob es den Zielknoten gibt
 
+    float tmpMinDist = 0.F; // Temporäre Variable, die die kleinste aktuelle Entfernung speichert
+    std::string tmpMinID = ""; // Temporäre Variable, die die ID des Knoten speichert der die aktuell kleinste Entfernung zum Startknoten besitzt
 
+    do { // Solange ausführen bis der Zielknoten gefunden wurde
+        for(_dIt = _dist->begin(); _dIt != _dist->end(); _dIt++) { // Durch die gesamte Map iterieren
+
+        }
+    } while(true);
 
 }
 
@@ -67,26 +75,42 @@ cNode* cGraph::_getNode(std::string id) {
 // Methode initialisiert die Entfernungen zu allen anderen Knoten
 // @param snode: Startpunkt des aktuell gesuchten Pfades
 bool cGraph::_initDistances(std::string snode) {
-    for(auto n : *_nodes) { _dist->insert(std::make_pair(n->getID(), -1.F)); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
+    for(auto n : *_nodes) { _dist->insert(std::make_pair(n->getID(), distData{-1, nullptr})); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
     _dIt = _dist->find(snode); // Startknoten suchen und im Iterator speichern
     if(_dIt != _dist->end()) { // Prüfen ob der Knoten gefunden wurde
-        _dIt->second = 0; // Startknoten hat keine Entfernung zu sich selbst
+        _dIt->second.dist = 0; // Startknoten hat keine Entfernung zu sich selbst
         _startNode = _getNode(_dIt->first); // Startknoten abspeichern
         return true; // Initialisierung erfolgreich
     } else {
         return false; // Initialisierung fehlgeschlagen
     }
-
 }
 
 // -- _doStep --
 // Methode führt einen "Schritt" aus: Von einem Knoten aus wird zum nächst besten
 // Knoten gesprungen, falls dies der Effizienteste Pfad ist
 // @param std::string id: Knoten von dem aus gesprungen wird
-void cGraph::_doStep(std::string id) {
+bool cGraph::_doStep(std::string id) {
+    float tmpDist = 0.F; // Temporäres Gewicht
+
     cNode *curNode = _getNode(id); // Aktuellen Knoten speichern
-    std::vector<sConnection> con = curNode->getConnections(); // Alle Verbindungen des aktuellen Knoten bekommen
-    for()
+    if(curNode == nullptr) { return false; } // Prüfen ob der Knoten gefunden wurde
+
+    std::vector<cNode::sConnection> conns = curNode->getConnections(); // Alle Verbindungen des aktuellen Knoten bekommen
+
+    for(auto con : conns) { // Durch alle Verbindungen iterieren
+        tmpDist = _dist->find(id)->second.dist + con.weight; // Entfernung zum aktuellen Zielknoten
+        _dIt = _dist->find(con.n->getID()); // Aktuellen Zielknoten bekommen
+        if(_dIt != _dist->end()) { // Prüfen ob der Zielknoten gefunden wurde
+            if((_dIt->second.dist > tmpDist) || (_dIt->second.dist < 0)) { // Prüfen ob ein (schnellerer) Weg zum Zielknoten gefunden wurde
+                _dIt->second.dist = tmpDist;   // Alte Entfernung überschreiben
+                _dIt->second.origin = curNode; // Ursprungsknoten überschreiben
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 // -- Destruktor --
