@@ -32,6 +32,7 @@ private:
     struct distData {  // Entfernungsdaten zum Startknoten
         float dist;    // Entfernung zum Startknoten
         cNode *origin; // Knoten von dem aus man den aktuellen Knoten erreichen kann
+        bool visited;  // Gibt an ob der Knoten schon besucht wurde
     };
 
     std::map<std::string, distData> *_dist; // Methode speichert die Entfernungen zu den anderen Knoten
