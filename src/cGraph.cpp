@@ -34,18 +34,32 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
 
 // -- findPath --
 // Methode findet den schnellsten Pfad zwischen zwei Knoten
-// @param id_1, id_2: Knoten zwischen denen ein Pfad erstellt werden soll
-void cGraph::findPath(std::string id_1, std::string id_2) {
-    if(!_initDistances(id_1)) { /* TODO: Error Handling */}
-    if(_dist->find(id_2) == _dist->end()) { /* TODO: Error Handling */} // Prüfen ob es den Zielknoten gibt
+// @param id_s: Source Knoten (Startknoten)
+// @param id_d: Destination Knotne (Zielknoten)
+void cGraph::findPath(std::string id_s, std::string id_d) {
+    if(!_initDistances(id_s)) { /* TODO: Error Handling */}
+    if(_dist->find(id_d) == _dist->end()) { /* TODO: Error Handling */} // Prüfen ob es den Zielknoten gibt
 
-    float tmpMinDist = 0.F; // Temporäre Variable, die die kleinste aktuelle Entfernung speichert
+    float tmpMinDist = -1.F; // Temporäre Variable, die die kleinste aktuelle Entfernung speichert
     std::string tmpMinID = ""; // Temporäre Variable, die die ID des Knoten speichert der die aktuell kleinste Entfernung zum Startknoten besitzt
 
     do { // Solange ausführen bis der Zielknoten gefunden wurde
         for(_dIt = _dist->begin(); _dIt != _dist->end(); _dIt++) { // Durch die gesamte Map iterieren
-
+            if((tmpMinDist < 0) || (_dIt->second.dist < tmpMinDist)) { // Prüfen ob ein Knoten mit einer kleineren Entfernung gefunden wurde
+                tmpMinDist = _dIt->second.dist; // Aktuell kleinste Entfernung überschreiben
+                tmpMinID   = _dIt->first; // Knoten überschreiben
+            }
         }
+
+        if(tmpMinID == id_d) { // Prüfen ob man am Zielknoten angelangt ist
+            _evaluatePath(id_s, id_d); // Pfad ausgeben
+            break; // Zielknoten ausgeben
+        } else {
+            _doStep(tmpMinID); //
+        }
+
+        tmpMinDist = -1.F;
+        tmpMinID = "";
     } while(true);
 
 }
@@ -111,6 +125,19 @@ bool cGraph::_doStep(std::string id) {
             return false;
         }
     }
+}
+
+// -- _evaluatePath --
+// Methode wertet die _dist-Map aus und gibt diese zurück bzw. aus
+// @param id_s: Source Knoten (Startknoten)
+// @param id_d: Destination Knotne (Zielknoten)
+void cGraph::_evaluatePath(std::string id_s, std::string id_d) {
+    _dIt = _dist->find(id_d); // Zielknoten finden
+    do {
+        std::cout << _dIt->first << " < " << std::endl;
+        if(_dIt->first == id_s) { return; } // Beim Startknoten abbrechen
+        _dIt = _dist->find(_dIt->second.origin->getID()); // Ursprungsknoten finden
+    } while(true);
 }
 
 // -- Destruktor --

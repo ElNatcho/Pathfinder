@@ -20,7 +20,7 @@ public:
     void addNode(std::string id); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
 
-    void findPath(std::string id_1, std::string id_2); // Methode findet den schnellsten Pfad zwischen zwei Knoten
+    void findPath(std::string id_s, std::string id_d); // Methode findet den schnellsten Pfad zwischen zwei Knoten
 
     void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
 
@@ -43,6 +43,7 @@ private:
 
     bool _initDistances(std::string snode); // Methode initialisiert die Entfernungen
     bool _doStep(std::string id); // Methode führt einen "Schritt" im Graphen aus
+    void _evaluatePath(std::string id_s, std::string id_d); // _dist-Map auswerten und ausgeben
 
 };
 
