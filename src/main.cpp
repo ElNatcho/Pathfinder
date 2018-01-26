@@ -14,6 +14,8 @@ int main() {
 
     g.info();
 
+    g.findPath("1", "3");
+
     //delete g;
 
     return 0;

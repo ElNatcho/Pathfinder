@@ -4,6 +4,7 @@
 cGraph::cGraph() {
     // Alloc Mem
     _nodes = new std::vector<cNode*>();
+    _dist = new std::map<std::string, float>();
 
 }
 
@@ -29,6 +30,15 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
         con.n = n1; // Zielknoten in Konten 1 ändern
         n2->addConnection(con); // Verbindung in Knoten 2 einfügen
     }
+}
+
+// -- findPath --
+// Methode findet den schnellsten Pfad zwischen zwei Knoten
+// @param id_1, id_2: Knoten zwischen denen ein Pfad erstellt werden soll
+void cGraph::findPath(std::string id_1, std::string id_2) {
+    if(!_initDistances(id_1)) { /* TODO: Error Handling */}
+
+
 
 }
 
@@ -53,11 +63,41 @@ cNode* cGraph::_getNode(std::string id) {
     return nullptr; // nullptr zurückgeben falls nichts gefunden wurde
 }
 
+// -- _initDistances --
+// Methode initialisiert die Entfernungen zu allen anderen Knoten
+// @param snode: Startpunkt des aktuell gesuchten Pfades
+bool cGraph::_initDistances(std::string snode) {
+    for(auto n : *_nodes) { _dist->insert(std::make_pair(n->getID(), -1.F)); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
+    _dIt = _dist->find(snode); // Startknoten suchen und im Iterator speichern
+    if(_dIt != _dist->end()) { // Prüfen ob der Knoten gefunden wurde
+        _dIt->second = 0; // Startknoten hat keine Entfernung zu sich selbst
+        _startNode = _getNode(_dIt->first); // Startknoten abspeichern
+        return true; // Initialisierung erfolgreich
+    } else {
+        return false; // Initialisierung fehlgeschlagen
+    }
+
+}
+
+// -- _doStep --
+// Methode führt einen "Schritt" aus: Von einem Knoten aus wird zum nächst besten
+// Knoten gesprungen, falls dies der Effizienteste Pfad ist
+// @param std::string id: Knoten von dem aus gesprungen wird
+void cGraph::_doStep(std::string id) {
+    cNode *curNode = _getNode(id); // Aktuellen Knoten speichern
+    std::vector<sConnection> con = curNode->getConnections(); // Alle Verbindungen des aktuellen Knoten bekommen
+    for()
+}
+
 // -- Destruktor --
 cGraph::~cGraph() {
     // Free Mem
     // node-vector freigeben
     for(auto i : *_nodes) { SAFE_DELETE(i); } // Alle Nodes im Vector löschen
     SAFE_DELETE(_nodes); // Vector löschen
+    // Dist-Map freigeben
+    _dist->clear(); // Alle Einträge löschen
+    SAFE_DELETE(_dist); // _dist-Map löschen
+
 
 }
