@@ -57,7 +57,7 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
         tmpMinID = "";
 
         for(_dIt = _dist->begin(); _dIt != _dist->end(); _dIt++) { // Durch die gesamte Map iterieren
-            if(((tmpMinDist <= 0) || (_dIt->second.dist < tmpMinDist)) && !_dIt->second.visited) { // Prüfen ob ein Knoten mit einer kleineren Entfernung gefunden wurde
+            if(!_dIt->second.visited && ((tmpMinDist <= 0) || ((_dIt->second.dist >= 0) && (_dIt->second.dist < tmpMinDist)))) { // Prüfen ob ein Knoten mit einer kleineren Entfernung gefunden wurde
                 tmpMinDist = _dIt->second.dist; // Aktuell kleinste Entfernung überschreiben
                 tmpMinID   = _dIt->first; // Knoten überschreiben
             }
