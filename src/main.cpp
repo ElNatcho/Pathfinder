@@ -4,6 +4,8 @@
 int main() {
     cGraph g;
 
+    std::cout << "Test: " << std::endl;
+
     g.addNode("1");
     g.addNode("2");
     g.addNode("3");
