@@ -15,8 +15,8 @@ L_F := -o $(NAME) -Wall
 D_F := -g
 
 # Source Dateien
-SRC := $(SRC_DIR)/*.cpp
-HED := $(SRC_DIR)/*.hpp
+SRC := $(SRC_DIR)/*.cpp $(SRC_DIR)/Graph/*.cpp
+HED := $(SRC_DIR)/*.hpp $(SRC_DIR)/Graph/*.hpp
 OBJ := main.o cGraph.o cNode.o
 
 all: $(OBJ)
@@ -39,7 +39,7 @@ endif
 .PHONY: clean
 clean:
 	-rm -f $(OBJ)
-	-rm -f $(SRC_DIR)/*.hpp.gch
+	-rm -f $(SRC_DIR)/*.hpp.gch $(SRC_DIR)/Graph/*.hpp.gch
 ifeq ($(C_MODE), R)
 	mv $(NAME) $(REL_DIR)
 else

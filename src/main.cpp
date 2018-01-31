@@ -1,5 +1,5 @@
 #include<iostream>
-#include"cGraph.hpp"
+#include"Graph/cGraph.hpp"
 
 int main() {
     cGraph g;
