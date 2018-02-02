@@ -2,7 +2,7 @@
 
 # Allgemeine Projekteigenschaften
 NAME := Pathfinder
-P_ROOT := ~/Projekte/C-CPP/Pathfinder
+P_ROOT := $(shell pwd)
 SRC_DIR := $(P_ROOT)/src
 REL_DIR := $(P_ROOT)/bin/release
 DBG_DIR := $(P_ROOT)/bin/debug

@@ -26,7 +26,8 @@ public:
 private:
 
     // -- Member Vars --
-    std::fstream *_fstream; // Fstream um mit einer Datei zu interagieren
+    std::ofstream *_ofstream; // Ofstream zum schreiben der Datei
+    std::ifstream *_ifstream; // Ifstream zum lesen der Datei
 
     std::vector<std::string> *_fileContent; // Vector der den Inhalt einer Datei speichert
     std::string *_tmpString; // Speichert temporär eine aus der aktuell geöffneten Datei ausgelesene Zeile
