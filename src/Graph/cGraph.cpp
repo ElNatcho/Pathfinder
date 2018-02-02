@@ -3,9 +3,16 @@
 // -- Konstruktor --
 cGraph::cGraph() {
     // Alloc Mem
+    _createConnection_pattern = new std::regex();
+    _createNode_pattern = new std::regex();
+    _fileMgr = new cFileMgr();
+    _match = new std::smatch();
     _nodes = new std::vector<cNode*>();
     _dist = new std::map<std::string, distData>();
 
+    // Werte setzen
+    *_createNode_pattern = "id=[\\w\\d_-]+";
+    *_createConnection_pattern = ">c_id=[\\w\\d]+.+"; // \t>c_id=[:word:]+[:space:]{1}w=[:digit:]+
 }
 
 // -- addNode --
@@ -63,7 +70,68 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
             }
         }
     } while(true);
+}
 
+// -- importGraph --
+// Methode importiert einen Graphen aus einer Datei
+// @param path: Pfad zur/Name der Datei
+bool cGraph::importGraph(std::string path) {
+    if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+        return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
+    }
+    std::vector<std::string> fc = _fileMgr->readFileContent(); // Daten auslesen
+    _fileMgr->closeFile(); // Datei schliessen
+
+    cNode *_tmpNode = nullptr; // Temporären Knoten erstellen
+    std::string _tmpStr = ""; // Temporären String erstellen
+    float _tmpWeight = 0.F; // Temporäre Gewichtung erstellen
+    std::vector<std::pair<std::string, std::pair<std::string, float>>> _conVec; // Speichert temporär die Verbindungen zwischen Knoten
+
+    if(fc.size() > 0) { // Prüfen ob Daten importiert wurden
+        for(std::string str : fc) { // Druch alle Zeilen der ausgelesenen Datei iterieren
+            if (std::regex_search(str, *_match, *_createConnection_pattern)) { // Prüfen ob in der aktuellen Zeile eine neue Verbindung erstellt wird
+                _tmpStr = _match->str().substr(_match->str().find(">c_id=") + 6); // Alles bis eingeschlossen "c_id=" abtrennen
+                _tmpWeight = std::stof(_tmpStr.substr(_tmpStr.find(" w=") + 3, _tmpStr.size())); // Die Gewichtung aus dem String extrahieren, zu float konvertiern und abspeichern
+                _tmpStr = _tmpStr.substr(0, _tmpStr.find(" w=")); // Speichert die ID in _tmpStr
+                if(_tmpNode == nullptr) { return false; } // Parsing-Fehler auslösen falls kein Knoten erzeugt wurde
+                _conVec.push_back(std::make_pair(_tmpNode->getID(), std::make_pair(_tmpStr, _tmpWeight))); // Verbindung temporär in der Verbindungs-Map speichern
+            } else if(std::regex_search(str, *_match, *_createNode_pattern)) { // Prüfen ob in der aktuellen Zeile ein neuer Knoten erstellt wird
+                if(_tmpNode != nullptr) { _nodes->push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
+                _tmpNode = new cNode(_match->str().substr(3, _match->str().size())); // Neuen Knoten mit der ID des aktuell ausgelesenen Knoten erstellen
+            }
+        }
+        _nodes->push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
+        for(auto c : _conVec) { // Durch alle temporär gespeicherte Verbindungen iterieren
+            if(_tmpNode->getID() != c.first){ // Prüfen ob die Verbindung einen anderen Knoten hinzugefügt werden soll
+                _tmpNode = _getNode(c.first); // Knoten suchen und abspeichern
+            }
+            _tmpNode->addConnection({_getNode(c.second.first), c.second.second}); // Verbindung hinzufügen
+        }
+
+        return true;
+    } else { // Falls keine Daten importiert wurden
+        return false; // Fehlschlag zurückgeben
+    }
+}
+
+// -- exportGraph --
+// Methode exportiert einen Graphen in eine Datei
+// @param path: Pfad zur/Name der Datei
+bool cGraph::exportGraph(std::string path) {
+    if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+        return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
+    }
+
+    // TODO: writeToFile Error Handling
+    for(auto n : *_nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
+        _fileMgr->writeToFile("id=" + n->getID() + "\n"); // ID des aktuellen Knotens in die Datei exportieren
+        for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
+            _fileMgr->writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
+        }
+    }
+
+    _fileMgr->closeFile(); // Datei schliessen
+    return true;
 }
 
 // -- info --
@@ -147,12 +215,21 @@ void cGraph::_evaluatePath(std::string id_s, std::string id_d) {
 // -- Destruktor --
 cGraph::~cGraph() {
     // Free Mem
+
     // node-vector freigeben
     for(auto i : *_nodes) { SAFE_DELETE(i); } // Alle Nodes im Vector löschen
     SAFE_DELETE(_nodes); // Vector löschen
+
     // Dist-Map freigeben
     _dist->clear(); // Alle Einträge löschen
     SAFE_DELETE(_dist); // _dist-Map löschen
 
+    // FileMgr freigeben
+    SAFE_DELETE(_fileMgr);
+
+    // Regex Variablen freigeben
+    SAFE_DELETE(_match);
+    SAFE_DELETE(_createNode_pattern);
+    SAFE_DELETE(_createConnection_pattern);
 
 }

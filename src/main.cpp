@@ -4,7 +4,7 @@
 int main() {
     cGraph g;
 
-    g.addNode("1");
+    /*g.addNode("1");
     g.addNode("2");
     g.addNode("3");
     g.addNode("4");
@@ -16,6 +16,21 @@ int main() {
     g.addConnection("2", "3", 1.F);
 
     g.info();
+    if(g.exportGraph("test.grp")){
+        std::cout << ">Graph konnte erfolgreich exportiert werden." << std::endl;
+    }
+
+    g.findPath("1", "4");*/
+
+    std::cout << "Vor Import: " << std::endl;
+    g.info();
+    if(!g.importGraph("test.grp")) {
+        std::cout << "Graph konnte nicht importiert werden :(" << std::endl;
+        return -1;
+    } else {
+        std::cout << "Nach Import: " << std::endl;
+        g.info();
+    }
 
     g.findPath("1", "4");
 
