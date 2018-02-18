@@ -7,17 +7,18 @@ SRC_DIR := $(P_ROOT)/src
 REL_DIR := $(P_ROOT)/bin/release
 DBG_DIR := $(P_ROOT)/bin/debug
 C_MODE := R
+USR_INCS := /usr/local/include
 
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14 -Wall
-L_F := -o $(NAME) -Wall
+C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml
+L_F := -o $(NAME) -Wall -lsfml-graphics -lsfml-window -lsfml-system -lX11 -lGL
 D_F := -g
 
 # Source Dateien
-SRC := $(SRC_DIR)/*.cpp
+SRC := $(SRC_DIR)/*.cpp $(SRC_DIR)/imGui/*.cpp
 #HED := $(SRC_DIR)/*.hpp
-OBJ := main.o
+OBJ := main.o imgui.o imgui_demo.o imgui_draw.o imgui-SFML.o
 
 all: $(OBJ)
 ifeq ($(C_MODE), R)
