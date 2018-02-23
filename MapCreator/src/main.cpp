@@ -3,6 +3,7 @@
 #include<imgui-SFML.h>
 #include<iostream>
 #include<string>
+#include"Graph/cGraph.hpp"
 
 int main(int argc, char **argv) {
     // Prüfen ob ein Bild zum laden übergeben wurde
@@ -29,13 +30,18 @@ int main(int argc, char **argv) {
     // Sprite erstellen
     sf::Sprite spr;
     spr.setTexture(tex); // Textur des Sprites festlegen
+
+
+
     // Bild skalieren, sodass keine schwarzen Balken an den Rändern des Fenster entstehen oder ein Teil des Bildes abgeschnitten wird
     spr.setScale((float)window.getSize().x / (float)tex.getSize().x,
                  (float)window.getSize().y / (float)tex.getSize().y);
 
-    // Speichert ob der Punkt hinzufügen Dialog angezeigt werden soll
-    bool addPoint = false;
-    sf::Vector2i mouse_pos; // Vector speichert die Position der Maus bei der der linke Knopf das letzte mal gedrückt wurde
+
+    bool addPoint = false; // Speichert ob der Punkt hinzufügen Dialog angezeigt werden soll
+    sf::Vector2i mouse_win_pos; // Vector speichert die Position der Maus im Fenseter
+    sf::Vector2i mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
+
 
     // Window-Loop erstellen und aufrechterhalten solange bis das Fenster geschlossen wird
     while (window.isOpen()) {
@@ -51,7 +57,9 @@ int main(int argc, char **argv) {
             // Prüfen ob ein Knopf der Maus gedrückt wurde
             if(sfEvent.type == sf::Event::MouseButtonReleased) {
                 if(sfEvent.mouseButton.button == 0) { // Linker Knopf wurde gedrückt
-                    mouse_pos = sf::Mouse::getPosition(window);
+                    mouse_win_pos = sf::Mouse::getPosition(window); // Position der Maus im Fenseter speichern
+                    mouse_pic_pos = sf::Vector2i((float)tex.getSize().x * ((float)mouse_win_pos.x / (float)window.getSize().x),  // Position der Maus im Fenster
+                                                 (float)tex.getSize().y * ((float)mouse_win_pos.y / (float)window.getSize().y)); // speichern
                     addPoint  = true;
                 }
             }
@@ -70,7 +78,12 @@ int main(int argc, char **argv) {
             // ImGui Fenster beginnen
             ImGui::Begin("Punkt hinzufügen");
 
-            ImGui::LabelText(" ", std::string("Mouse_Pos: X: " + std::to_string(mouse_pos.x) + " Y: " + std::to_string(mouse_pos.y)).c_str());
+            // Position der Maus im Fenster anzeigen
+            ImGui::LabelText(" ", std::string("Mouse_Pos: X: " + std::to_string(mouse_win_pos.x) +
+                " Y: " + std::to_string(mouse_win_pos.y)).c_str());
+            // Positon der Maus im Bild anzeigen
+            ImGui::LabelText(" ", std::string("Pic_Pos:   X: " + std::to_string(mouse_pic_pos.x) +
+                " Y: " + std::to_string(mouse_pic_pos.y)).c_str());
 
             if(ImGui::Button("OK")) {
                 addPoint = false;

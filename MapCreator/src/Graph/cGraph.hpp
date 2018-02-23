@@ -24,7 +24,6 @@ public:
 
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
-    void findPath(std::string id_s, std::string id_d); // Methode findet den schnellsten Pfad zwischen zwei Knoten
     bool exportGraph(std::string path); // Exportiert einen Graphen aus einer Datei
 
     void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
@@ -40,10 +39,6 @@ private:
         bool visited;  // Gibt an ob der Knoten schon besucht wurde
     };
 
-    std::map<std::string, distData> *_dist; // Methode speichert die Entfernungen zu den anderen Knoten
-    std::map<std::string, distData>::iterator _dIt; // Iterator der Entfernungsmap
-    cNode *_startNode; // Knoten bei dem der Pfad gestartet wird
-
     cFileMgr *_fileMgr; // Für die import/export Methode
 
     // Regex für importGraph
@@ -53,10 +48,6 @@ private:
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück
-
-    bool _initDistances(std::string snode); // Methode initialisiert die Entfernungen
-    bool _doStep(std::string id); // Methode führt einen "Schritt" im Graphen aus
-    void _evaluatePath(std::string id_s, std::string id_d); // _dist-Map auswerten und ausgeben
 
 };
 
