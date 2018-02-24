@@ -4,6 +4,8 @@
 #include<iostream>
 #include<string>
 #include"Graph/cGraph.hpp"
+#include"UI/cUI_Mgr.hpp"
+#include"common.hpp"
 
 int main(int argc, char **argv) {
     // Prüfen ob ein Bild zum laden übergeben wurde
@@ -41,7 +43,10 @@ int main(int argc, char **argv) {
     sf::Vector2i mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
 
     cGraph graph; // Grap der erstellt/bearbeitet wird
-    std::string newNodeID = ""; // ID eines neu hinzugefügten Knotens
+    //char* newNodeID = new char[255]; // ID eines neu hinzugefügten Knotens
+    //newNodeID[0] = '\0';
+
+    cUI_Mgr ui_mgr(&graph); // UI-Mgr mit Zeiger auf den Graphen erstellen
 
     // Window-Loop erstellen und aufrechterhalten solange bis das Fenster geschlossen wird
     while (window.isOpen()) {
@@ -57,9 +62,8 @@ int main(int argc, char **argv) {
             // Prüfen ob ein Knopf der Maus gedrückt wurde
             if(sfEvent.type == sf::Event::MouseButtonReleased && !addPoint) {
                 if(sfEvent.mouseButton.button == 0) { // Linker Knopf wurde gedrückt
-                    mouse_win_pos = sf::Mouse::getPosition(window); // Position der Maus im Fenseter speichern
-                    mouse_pic_pos = sf::Vector2i((float)tex.getSize().x * ((float)mouse_win_pos.x / (float)window.getSize().x),  // Position der Maus im Fenster
-                                                 (float)tex.getSize().y * ((float)mouse_win_pos.y / (float)window.getSize().y)); // speichern
+                    mouse_win_pos = com::getMousePosWin(sf::Mouse::getPosition(window), window);
+                    mouse_pic_pos = com::getMousePosPic(sf::Mouse::getPosition(window), window, tex);
                     addPoint  = true;
                 }
             }
@@ -73,28 +77,12 @@ int main(int argc, char **argv) {
 
         window.draw(spr);
 
-        // Prüfen ob ein Punkt hinzugefügt werden soll
+        // Prüfen ob ein Knoten hinzugefügt werden soll
         if(addPoint) {
-            // ImGui Fenster beginnen
-            ImGui::Begin("Punkt hinzufügen");
-
-            // Position der Maus im Fenster anzeigen
-            ImGui::LabelText(" ", std::string("Mouse_Pos: X: " + std::to_string(mouse_win_pos.x) +
-                " Y: " + std::to_string(mouse_win_pos.y)).c_str());
-            // Positon der Maus im Bild anzeigen
-            ImGui::LabelText(" ", std::string("Pic_Pos:   X: " + std::to_string(mouse_pic_pos.x) +
-                " Y: " + std::to_string(mouse_pic_pos.y)).c_str());
-
-            // Falls der OK Button gedrückt wird ..
-            if(ImGui::Button("OK")) {
-                graph.addNode(newNodeID, mouse_win_pos); // Den neuen Knoten erstellen
-                addPoint = false; // Fenster schliessen
-            } else if(ImGui::Button("Abbrechen")) {
-                addPoint = false; // Fenster schliessen
-            }
-
-            ImGui::End();
+            addPoint = ui_mgr.renderAddNode_UI(mouse_win_pos, mouse_pic_pos); // AddNode UI anzeigen
         }
+
+        //ImGui::ShowDemoWindow();
 
         // Graph zeichnen
         graph.renderGraph(window);
