@@ -28,6 +28,9 @@ public:
     bool exportGraph(std::string path); // Exportiert einen Graphen aus einer Datei
 
     bool checkNodeSelect(sf::Vector2f mousePos); // Prüft ob ein Knoten angeklickt wurde
+    std::vector<cNode*> getSelectedNodes(); // Gibt die aktuell ausgewählten Knoten zurück
+    void deselectAllNodes(); // Methode deselektiert alle Knoten
+
     void renderGraph(sf::RenderWindow &rWin); // Methode rendert den Graphen
 
     void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus

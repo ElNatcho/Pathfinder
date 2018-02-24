@@ -9,6 +9,7 @@ cUI_Mgr::cUI_Mgr(cGraph *graph) {
     // Werte setzen
     _graph = graph;
     _newNodeID[0] = '\0';
+    _newWeight = 0;
 }
 
 // -- renderAddNode_UI --
@@ -48,9 +49,33 @@ bool cUI_Mgr::renderAddNode_UI(sf::Vector2f mouse_win_pos, sf::Vector2f mouse_pi
 
 // -- renderAddConn_UI --
 // Methode zeichnet die UI die nötig ist um Verbindungen zwischen Knoten herzustellen
-// @param idf: ID des ersten Knotens
-// @param idl: ID des letzten/zweiten Knotens
-bool cUI_Mgr::renderAddConn_UI(std::string idl, std::string idf) {
+bool cUI_Mgr::renderAddConn_UI() {
+    _selectedNodes = _graph->getSelectedNodes(); // Ausgewählte Knoten abfragen
+    if(_selectedNodes.size() >= 2) { // Prüfen ob zwei oder mehr Knoten ausgewählt sind
+        // ImGui Fenster beginnen
+        ImGui::Begin("Verbindung hinzufügen");
+
+        ImGui::Text("Soll eine Verbindung hinzugefügt werden?");
+
+        // Gewichtung der neuen Verbindung abfragen
+        ImGui::InputFloat("Gewichtung", &_newWeight);
+
+        // Falls der OK Button gedrück wird ..
+        if(ImGui::Button("OK")) {
+            // Verbindung zwischen den ersten zwei ausgewählten Knoten herstellen
+            _graph->addConnection(_selectedNodes.at(0)->getID(),
+                                  _selectedNodes.at(1)->getID(),
+                                  _newWeight);
+            _graph->deselectAllNodes();
+        }else if(ImGui::Button("Abbrechen")) {
+            _graph->deselectAllNodes();
+        }
+
+        ImGui::End();
+
+        return true;
+    }
+
     return false;
 }
 

@@ -22,8 +22,8 @@ public:
     // Verbindungsstruktur
     struct sConnection {
         cNode *n; // Knoten auf den verwiesen wird
-        float weight; // Gewichtung der Verbindung
-        //sf::Lines con; // Linie die die zwei Knoten verbindet
+        float *weight; // Gewichtung der Verbindung
+        sf::VertexArray *con; // Linie die die zwei Knoten verbindet
     };
 
     // -- Kon/Destruktor --
@@ -37,6 +37,7 @@ public:
     sf::CircleShape getShape(); // Gibt _nodeSpr zurück
     std::vector<sConnection> getConnections(); // Methode gibt alle Verbindungen des Kotens zurück
 
+    CLICK_TYPE toggleSelect(); // Methode ändert den Select-Status des Knoten und gibt den Klick-Status zurück
     CLICK_TYPE toggleSelectIfClicked(sf::Vector2f mousePos); // Updated den Knoten falls er angeklickt wurde
 
 private:

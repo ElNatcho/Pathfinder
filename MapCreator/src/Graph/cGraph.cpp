@@ -24,7 +24,11 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
     cNode *n1 = _getNode(id_1); // Knoten 1 setzen
     cNode *n2 = _getNode(id_2); // Knoten 2 setzen
     if(n1 != nullptr && n2 != nullptr) {  // Prüfen ob beide Knoten gefunden wurden
-        con = {n2, weight}; // Knoten 2 als Zielknoten und Gewichtung setzen
+        con = {n2, new float(weight), new sf::VertexArray(sf::Lines, 2)}; // Knoten 2 als Zielknoten und Gewichtung setzen
+        con.con->operator[](0).position = n1->getShape().getPosition(); // Position eines Endes der Verbindung festlegen
+        con.con->operator[](1).position = n2->getShape().getPosition(); // Position des anderen Endes der Verbindung festlegen
+        con.con->operator[](0).color = sf::Color::Black; // Farbe eines Endes der Verbindung festlegen
+        con.con->operator[](1).color = sf::Color::Black; // Farbe des anderen Endes der Verbindung festlegen
         n1->addConnection(con); // Verbindung in Knoten 1 einfügen
         con.n = n1; // Zielknoten in Konten 1 ändern
         n2->addConnection(con); // Verbindung in Knoten 2 einfügen
@@ -86,7 +90,7 @@ bool cGraph::exportGraph(std::string path) {
     for(auto n : _nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
         _fileMgr.writeToFile("id=" + n->getID() + "\n"); // ID des aktuellen Knotens in die Datei exportieren
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
-            _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
+            _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
         }
     }
 
@@ -114,12 +118,30 @@ bool cGraph::checkNodeSelect(sf::Vector2f mousePos) {
     return false;
 }
 
+// --getSelectedNodes --
+// Methode gibt die aktuell ausgewählten Knoten zurück
+std::vector<cNode*> cGraph::getSelectedNodes() {
+    return _selectedNodes;
+}
+
+// -- deselectAllNodes --
+// Methode deselektiert alle aktuell ausgewählten Knoten
+void cGraph::deselectAllNodes() {
+    for (cNode *n : _selectedNodes) { // Durch alle ausgewählten Knoten iterieren
+        n->toggleSelect(); // Knoten deselektieren
+    }
+    _selectedNodes.clear(); // Alle Knoten aus der Liste löschen
+}
+
 // -- renderGraph --
 // Methode rendert den Graphen
 // @param rWin: Fenster in dem der Graph gezeichnet werden soll
 void cGraph::renderGraph(sf::RenderWindow &rWin) {
     for(cNode *n : _nodes) { // Durch alle Knoten iterieren
         rWin.draw(n->getShape()); // Knoten darstellen
+        for(cNode::sConnection con : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iteriern
+            rWin.draw(*con.con); // Aktuelle Verbindung zeichnen
+        }
     }
 }
 

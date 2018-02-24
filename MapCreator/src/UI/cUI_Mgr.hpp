@@ -18,14 +18,16 @@ public:
 
     // -- Methoden --
     bool renderAddNode_UI(sf::Vector2f mouse_win_pos, sf::Vector2f mouse_pic_pos);
-    bool renderAddConn_UI(std::string idl, std::string idf);
+    bool renderAddConn_UI();
 
 private:
 
     // -- Private Vars --
     cGraph *_graph; // Graph der erstellt wird
+    std::vector<cNode*> _selectedNodes; // Aktuell ausgewählte Knoten
 
     char *_newNodeID; // ID des Knotens der neu hinzugefügt wird
+    float _newWeight; // Gewichtung einer neuen Verbindung
 
 };
 

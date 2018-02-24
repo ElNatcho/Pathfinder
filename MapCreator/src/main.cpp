@@ -38,13 +38,12 @@ int main(int argc, char **argv) {
                  (float)window.getSize().y / (float)tex.getSize().y);
 
 
-    bool addPoint = false; // Speichert ob der Punkt hinzufügen Dialog angezeigt werden soll
+    bool addNode = false; // Speichert ob der Punkt-Hinzufügen-Dialog angezeigt werden soll
+    bool addConn = false; // Speichert ob der Verbindung-Hinzufügen-Dialog angezeigt wird
     sf::Vector2f mouse_win_pos; // Vector speichert die Position der Maus im Fenseter
     sf::Vector2f mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
 
     cGraph graph; // Grap der erstellt/bearbeitet wird
-    //char* newNodeID = new char[255]; // ID eines neu hinzugefügten Knotens
-    //newNodeID[0] = '\0';
 
     cUI_Mgr ui_mgr(&graph); // UI-Mgr mit Zeiger auf den Graphen erstellen
 
@@ -60,12 +59,13 @@ int main(int argc, char **argv) {
             }
 
             // Prüfen ob ein Knopf der Maus gedrückt wurde
-            if(sfEvent.type == sf::Event::MouseButtonReleased && !addPoint) {
+            if(sfEvent.type == sf::Event::MouseButtonReleased && !addNode) {
                 if(sfEvent.mouseButton.button == 0) { // Linker Knopf wurde gedrückt
                     mouse_win_pos = com::getMousePosWin(sf::Mouse::getPosition(window), window);      // Position der Maus im Fenster berechen
                     mouse_pic_pos = com::getMousePosPic(sf::Mouse::getPosition(window), window, tex); // Position der Maus im Bild berechen
-                    if(!graph.checkNodeSelect(mouse_win_pos)) // Prüfen ob ein Knoten ausgewählt wurde
-                        addPoint  = true;
+                    if(!graph.checkNodeSelect(mouse_win_pos)) { // Prüfen ob ein Knoten ausgewählt wurde
+                        addNode = true;
+                    }
                 }
             }
         }
@@ -78,9 +78,12 @@ int main(int argc, char **argv) {
 
         window.draw(spr);
 
+        // Den Verbindung-Hinzufügen-Dialog anzeign
+        addConn = ui_mgr.renderAddConn_UI(); // Klassen entscheident selbst, wann sie diesen anzeigt
+
         // Prüfen ob ein Knoten hinzugefügt werden soll
-        if(addPoint) {
-            addPoint = ui_mgr.renderAddNode_UI(mouse_win_pos, mouse_pic_pos); // AddNode UI anzeigen
+        if(addNode && !addConn) {
+            addNode = ui_mgr.renderAddNode_UI(mouse_win_pos, mouse_pic_pos); // AddNode UI anzeigen
         }
 
         //ImGui::ShowDemoWindow();
