@@ -15,7 +15,7 @@ cUI_Mgr::cUI_Mgr(cGraph *graph) {
 // Methode zeichnet die UI die nötig ist um einen Knoten hinzuzufügen
 // @param mouse_win_pos: Position der Maus im Fenster
 // @param mouse_pic_pos: Position der Maus im Bild
-bool cUI_Mgr::renderAddNode_UI(sf::Vector2i mouse_win_pos, sf::Vector2i mouse_pic_pos) {
+bool cUI_Mgr::renderAddNode_UI(sf::Vector2f mouse_win_pos, sf::Vector2f mouse_pic_pos) {
     // ImGui Fenster beginnen
     ImGui::Begin("Punkt hinzufügen");
 
@@ -44,6 +44,14 @@ bool cUI_Mgr::renderAddNode_UI(sf::Vector2i mouse_win_pos, sf::Vector2i mouse_pi
     ImGui::End();
 
     return true; // Zeichnen des UI Elements beenden
+}
+
+// -- renderAddConn_UI --
+// Methode zeichnet die UI die nötig ist um Verbindungen zwischen Knoten herzustellen
+// @param idf: ID des ersten Knotens
+// @param idl: ID des letzten/zweiten Knotens
+bool cUI_Mgr::renderAddConn_UI(std::string idl, std::string idf) {
+    return false;
 }
 
 // -- Destruktor --

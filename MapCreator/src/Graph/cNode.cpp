@@ -6,6 +6,7 @@
 cNode::cNode(std::string id, sf::Vector2f node_pos) {
     // Werte setzen
     _id = id;
+    _isSelected = false;
 
     // Eigenschaften des repräsentativen Kreises festlegen
     _nodeSpr.setPosition(node_pos.x - 5.F, node_pos.y - 5.F);
@@ -38,6 +39,25 @@ void cNode::addConnection(sConnection con) {
 // Methode gibt alle Verbindungen des aktuellen Knotens zurück
 std::vector<cNode::sConnection> cNode::getConnections() {
     return _connections;
+}
+
+// -- toggleSelectIfClicked --
+// Methode prüft ob der Knoten angeklickt wurde und updated ihn ggf. Die Methode gibt zurück
+// ob der Knoten nun ausgewählt ist oder nicht
+// @param mousePos: Position der Maus im Fenster
+cNode::CLICK_TYPE cNode::toggleSelectIfClicked(sf::Vector2f mousePos) {
+    if(_nodeSpr.getGlobalBounds().contains(mousePos)) { // Falls der Knoten angeklickt wurde
+        if(_isSelected) { // Prüfen ob der Knoten akutell ausgewählt ist
+            _nodeSpr.setFillColor(sf::Color::Red);
+            _isSelected = false; // Knoten deselektieren
+            return CLICK_TYPE::CL_UNSEL;
+        } else {
+            _nodeSpr.setFillColor(sf::Color::Green);
+            _isSelected = true; // Knoten selektieren
+            return CLICK_TYPE::CL_SEL;
+        }
+    }
+    return CLICK_TYPE::NCL;
 }
 
 // -- Destruktor --

@@ -39,8 +39,8 @@ int main(int argc, char **argv) {
 
 
     bool addPoint = false; // Speichert ob der Punkt hinzufügen Dialog angezeigt werden soll
-    sf::Vector2i mouse_win_pos; // Vector speichert die Position der Maus im Fenseter
-    sf::Vector2i mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
+    sf::Vector2f mouse_win_pos; // Vector speichert die Position der Maus im Fenseter
+    sf::Vector2f mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
 
     cGraph graph; // Grap der erstellt/bearbeitet wird
     //char* newNodeID = new char[255]; // ID eines neu hinzugefügten Knotens
@@ -62,9 +62,10 @@ int main(int argc, char **argv) {
             // Prüfen ob ein Knopf der Maus gedrückt wurde
             if(sfEvent.type == sf::Event::MouseButtonReleased && !addPoint) {
                 if(sfEvent.mouseButton.button == 0) { // Linker Knopf wurde gedrückt
-                    mouse_win_pos = com::getMousePosWin(sf::Mouse::getPosition(window), window);
-                    mouse_pic_pos = com::getMousePosPic(sf::Mouse::getPosition(window), window, tex);
-                    addPoint  = true;
+                    mouse_win_pos = com::getMousePosWin(sf::Mouse::getPosition(window), window);      // Position der Maus im Fenster berechen
+                    mouse_pic_pos = com::getMousePosPic(sf::Mouse::getPosition(window), window, tex); // Position der Maus im Bild berechen
+                    if(!graph.checkNodeSelect(mouse_win_pos)) // Prüfen ob ein Knoten ausgewählt wurde
+                        addPoint  = true;
                 }
             }
         }

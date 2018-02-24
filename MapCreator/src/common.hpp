@@ -17,9 +17,8 @@ namespace com {
     // Gibt die Position der Maus im Fenster zurück
     // @param mousePos: Position der Maus im skalierten/vergrößerten/verkleinerten Fenseter
     // @param rWin    : Referenz auf jenes Fenster
-    static sf::Vector2i getMousePosWin(sf::Vector2i mousePos, sf::RenderWindow &rWin) {
-        sf::Vector2f tmp = rWin.mapPixelToCoords(mousePos); // Koordinaten konvertieren
-        return sf::Vector2i(tmp.x, tmp.y);
+    static sf::Vector2f getMousePosWin(sf::Vector2i mousePos, sf::RenderWindow &rWin) {
+        return rWin.mapPixelToCoords(mousePos); // Koordinaten konvertieren
     }
 
     // -- getMousePosPic --
@@ -27,8 +26,8 @@ namespace com {
     // @param mousePos: Position der Maus im skalierten/vergrößerten/verkleinerten Fenseter
     // @param rWin    : Referenz auf jenes Fenster
     // @param tex     : Textur die jenes Bild darstellt
-    static sf::Vector2i getMousePosPic(sf::Vector2i mousePos, sf::RenderWindow &rWin, sf::Texture &tex) {
-        return sf::Vector2i((float)tex.getSize().x * ((float)mousePos.x / (float)rWin.getSize().x),  // Position der Maus im Bild
+    static sf::Vector2f getMousePosPic(sf::Vector2i mousePos, sf::RenderWindow &rWin, sf::Texture &tex) {
+        return sf::Vector2f((float)tex.getSize().x * ((float)mousePos.x / (float)rWin.getSize().x),  // Position der Maus im Bild
                           (float)tex.getSize().y * ((float)mousePos.y / (float)rWin.getSize().y)); // ausrechen und zurückgeben
     }
 

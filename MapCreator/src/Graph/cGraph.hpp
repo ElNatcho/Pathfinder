@@ -2,7 +2,8 @@
 #define CGRAPH_HPP
 
 // Includes
-//#include<SFML/Graphics.hpp>
+#include<SFML/Graphics.hpp>
+#include<algorithm>
 #include<iostream>
 #include<string>
 #include<vector>
@@ -20,20 +21,21 @@ public:
     ~cGraph();
 
     // -- Public Methods --
-    void addNode(std::string id, sf::Vector2i &node_pos); // Methode fügt einen neuen Knoten hinzu
+    void addNode(std::string id, sf::Vector2f &node_pos); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
-
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
     bool exportGraph(std::string path); // Exportiert einen Graphen aus einer Datei
 
+    bool checkNodeSelect(sf::Vector2f mousePos); // Prüft ob ein Knoten angeklickt wurde
     void renderGraph(sf::RenderWindow &rWin); // Methode rendert den Graphen
+
     void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
 
 private:
 
     // -- Private Vars --
-    std::vector<cNode*> *_nodes; // Vector speichert alle Knoten
+    std::vector<cNode*> _nodes; // Vector speichert alle Knoten
 
     struct distData {  // Entfernungsdaten zum Startknoten
         float dist;    // Entfernung zum Startknoten
@@ -41,12 +43,14 @@ private:
         bool visited;  // Gibt an ob der Knoten schon besucht wurde
     };
 
-    cFileMgr *_fileMgr; // Für die import/export Methode
+    cFileMgr _fileMgr; // Für die import/export Methode
 
     // Regex für importGraph
-    std::smatch *_match;
-    std::regex *_createNode_pattern; // Ausdruck drückt Strings aus die einen neuen Knoten erstellen
-    std::regex *_createConnection_pattern; // Ausdruck drückt Strings aus die eine neue Verbindung erstellen
+    std::smatch _match;
+    std::regex _createNode_pattern; // Ausdruck drückt Strings aus die einen neuen Knoten erstellen
+    std::regex _createConnection_pattern; // Ausdruck drückt Strings aus die eine neue Verbindung erstellen
+
+    std::vector<cNode*> _selectedNodes; // Speichert ausgewählte Knoten
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück

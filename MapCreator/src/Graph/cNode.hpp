@@ -11,6 +11,14 @@
 class cNode {
 public:
 
+    // Enum das angibt ob ein Knopf geklickt wurde und wie sich
+    // sein Status dadurch verändert
+    enum CLICK_TYPE {
+        CL_SEL,   // Angeklickt und nun ausgewählt
+        CL_UNSEL, // Angeklickt und nun nicht mehr ausgewählt
+        NCL       // Nicht angeklickt
+    };
+
     // Verbindungsstruktur
     struct sConnection {
         cNode *n; // Knoten auf den verwiesen wird
@@ -29,13 +37,17 @@ public:
     sf::CircleShape getShape(); // Gibt _nodeSpr zurück
     std::vector<sConnection> getConnections(); // Methode gibt alle Verbindungen des Kotens zurück
 
+    CLICK_TYPE toggleSelectIfClicked(sf::Vector2f mousePos); // Updated den Knoten falls er angeklickt wurde
+
 private:
 
     // Private Vars
     std::vector<sConnection> _connections; // Vector speichert alle Verbindungen des Knotens
     std::string _id; // ID des Knotens
 
-    sf::CircleShape _nodeSpr;
+    sf::CircleShape _nodeSpr; // Kreis der den Knoten darstellt
+
+    bool _isSelected; // Speichert ob der Knoten ausgewählt ist
 
 };
 

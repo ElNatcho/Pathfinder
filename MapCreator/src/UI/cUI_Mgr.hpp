@@ -17,8 +17,8 @@ public:
     ~cUI_Mgr();
 
     // -- Methoden --
-    bool renderAddNode_UI(sf::Vector2i mouse_win_pos, sf::Vector2i mouse_pic_pos);
-
+    bool renderAddNode_UI(sf::Vector2f mouse_win_pos, sf::Vector2f mouse_pic_pos);
+    bool renderAddConn_UI(std::string idl, std::string idf);
 
 private:
 
