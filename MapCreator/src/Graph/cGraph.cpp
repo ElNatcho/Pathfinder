@@ -8,7 +8,6 @@ cGraph::cGraph() {
     _fileMgr = new cFileMgr();
     _match = new std::smatch();
     _nodes = new std::vector<cNode*>();
-    _dist = new std::map<std::string, distData>();
 
     // Werte setzen
     *_createNode_pattern = "id=[\\w\\d_-]+";
@@ -18,8 +17,8 @@ cGraph::cGraph() {
 // -- addNode --
 // Methode fügt einen neuen Knoten hinzu
 // @param id: ID des Knotens
-void cGraph::addNode(std::string id) {
-    _nodes->push_back(new cNode(id)); // Neuer Knoten wird in den Vector eingefügt
+void cGraph::addNode(std::string id, sf::Vector2i &node_pos) {
+    _nodes->push_back(new cNode(id, sf::Vector2f(node_pos.x, node_pos.y))); // Neuer Knoten wird in den Vector eingefügt
 }
 
 // -- addConnection --
@@ -43,7 +42,7 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
 // Methode importiert einen Graphen aus einer Datei
 // @param path: Pfad zur/Name der Datei
 bool cGraph::importGraph(std::string path) {
-    if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+    /*if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
         return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
     }
     std::vector<std::string> fc = _fileMgr->readFileContent(); // Daten auslesen
@@ -78,7 +77,8 @@ bool cGraph::importGraph(std::string path) {
         return true;
     } else { // Falls keine Daten importiert wurden
         return false; // Fehlschlag zurückgeben
-    }
+    }*/
+    return false;
 }
 
 // -- exportGraph --
@@ -99,6 +99,15 @@ bool cGraph::exportGraph(std::string path) {
 
     _fileMgr->closeFile(); // Datei schliessen
     return true;
+}
+
+// -- renderGraph --
+// Methode rendert den Graphen
+// @param rWin: Fenster in dem der Graph gezeichnet werden soll
+void cGraph::renderGraph(sf::RenderWindow &rWin) {
+    for(cNode *n : *_nodes) { // Durch alle Knoten iterieren
+        rWin.draw(n->getShape()); // Knoten darstellen
+    }
 }
 
 // -- info --

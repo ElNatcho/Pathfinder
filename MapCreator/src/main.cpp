@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
     }
 
     // Das Fenster und dessen Event(s) erstellen
-    sf::RenderWindow window(sf::VideoMode(600,480), "Map Creator v0.1");
+    sf::RenderWindow window(sf::VideoMode(1280,720), "Map Creator v0.1");
     sf::Event        sfEvent;
 
     // ImGui Initialisieren
@@ -31,8 +31,6 @@ int main(int argc, char **argv) {
     sf::Sprite spr;
     spr.setTexture(tex); // Textur des Sprites festlegen
 
-
-
     // Bild skalieren, sodass keine schwarzen Balken an den Rändern des Fenster entstehen oder ein Teil des Bildes abgeschnitten wird
     spr.setScale((float)window.getSize().x / (float)tex.getSize().x,
                  (float)window.getSize().y / (float)tex.getSize().y);
@@ -42,6 +40,8 @@ int main(int argc, char **argv) {
     sf::Vector2i mouse_win_pos; // Vector speichert die Position der Maus im Fenseter
     sf::Vector2i mouse_pic_pos;   // Vector speichert die Position der Maus im Bild
 
+    cGraph graph; // Grap der erstellt/bearbeitet wird
+    std::string newNodeID = ""; // ID eines neu hinzugefügten Knotens
 
     // Window-Loop erstellen und aufrechterhalten solange bis das Fenster geschlossen wird
     while (window.isOpen()) {
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
             }
 
             // Prüfen ob ein Knopf der Maus gedrückt wurde
-            if(sfEvent.type == sf::Event::MouseButtonReleased) {
+            if(sfEvent.type == sf::Event::MouseButtonReleased && !addPoint) {
                 if(sfEvent.mouseButton.button == 0) { // Linker Knopf wurde gedrückt
                     mouse_win_pos = sf::Mouse::getPosition(window); // Position der Maus im Fenseter speichern
                     mouse_pic_pos = sf::Vector2i((float)tex.getSize().x * ((float)mouse_win_pos.x / (float)window.getSize().x),  // Position der Maus im Fenster
@@ -85,12 +85,19 @@ int main(int argc, char **argv) {
             ImGui::LabelText(" ", std::string("Pic_Pos:   X: " + std::to_string(mouse_pic_pos.x) +
                 " Y: " + std::to_string(mouse_pic_pos.y)).c_str());
 
+            // Falls der OK Button gedrückt wird ..
             if(ImGui::Button("OK")) {
-                addPoint = false;
+                graph.addNode(newNodeID, mouse_win_pos); // Den neuen Knoten erstellen
+                addPoint = false; // Fenster schliessen
+            } else if(ImGui::Button("Abbrechen")) {
+                addPoint = false; // Fenster schliessen
             }
 
             ImGui::End();
         }
+
+        // Graph zeichnen
+        graph.renderGraph(window);
 
         // ImGui Elemente Zeichnen
         ImGui::SFML::Render(window);

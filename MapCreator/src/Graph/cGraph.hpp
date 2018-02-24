@@ -2,6 +2,7 @@
 #define CGRAPH_HPP
 
 // Includes
+//#include<SFML/Graphics.hpp>
 #include<iostream>
 #include<string>
 #include<vector>
@@ -19,13 +20,14 @@ public:
     ~cGraph();
 
     // -- Public Methods --
-    void addNode(std::string id); // Methode fügt einen neuen Knoten hinzu
+    void addNode(std::string id, sf::Vector2i &node_pos); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
 
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
     bool exportGraph(std::string path); // Exportiert einen Graphen aus einer Datei
 
+    void renderGraph(sf::RenderWindow &rWin); // Methode rendert den Graphen
     void info(); // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
 
 private:

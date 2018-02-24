@@ -16,9 +16,9 @@ L_F := -o $(NAME) -Wall -lsfml-graphics -lsfml-window -lsfml-system -lX11 -lGL
 D_F := -g
 
 # Source Dateien
-SRC := $(SRC_DIR)/*.cpp $(SRC_DIR)/imGui/*.cpp
-#HED := $(SRC_DIR)/*.hpp
-OBJ := main.o imgui.o imgui_demo.o imgui_draw.o imgui-SFML.o
+SRC := $(SRC_DIR)/*.cpp $(SRC_DIR)/Graph/*.cpp $(SRC_DIR)/Graph/FileMgr/*.cpp $(SRC_DIR)/imGui/*.cpp
+HED := $(SRC_DIR)/*.hpp $(SRC_DIR)/Graph/*.hpp $(SRC_DIR)/Graph/FileMgr/*.hpp
+OBJ := main.o imgui.o imgui_demo.o imgui_draw.o imgui-SFML.o cGraph.o cNode.o cFileMgr.o
 
 all: $(OBJ)
 ifeq ($(C_MODE), R)
@@ -31,15 +31,16 @@ endif
 $(OBJ): $(SRC_DIR)
 ifeq ($(C_MODE), R)
 	$(CXX) $(C_F) $(SRC)
-	#$(CXX) $(C_F) $(HED)
+	$(CXX) $(C_F) $(HED)
 else
 	$(CXX) $(C_F) $(D_F) $(SRC)
-	#$(CXX) $(C_F) $(D_F) $(HED)
+	$(CXX) $(C_F) $(D_F) $(HED)
 endif
 
 .PHONY: clean
 clean:
 	-rm -f $(OBJ)
+	-rm -f $(SRC_DIR)/*.hpp.gch $(SRC_DIR)/Graph/*.hpp.gch $(SRC_DIR)/Graph/FileMgr/*.hpp.gch
 ifeq ($(C_MODE), R)
 	mv $(NAME) $(REL_DIR)
 else
