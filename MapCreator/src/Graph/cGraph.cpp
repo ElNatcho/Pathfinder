@@ -185,5 +185,4 @@ cGraph::~cGraph() {
     // node-vector freigeben
     for(auto i : _nodes) { SAFE_DELETE(i); } // Alle Nodes im Vector löschen
     _nodes.clear();
-
 }

@@ -22,7 +22,7 @@ int main() {
 
     g.findPath("1", "4");*/
 
-    std::cout << "Vor Import: " << std::endl;
+    /*std::cout << "Vor Import: " << std::endl;
     g.info();
     if(!g.importGraph("test.grp")) {
         std::cout << "Graph konnte nicht importiert werden :(" << std::endl;
@@ -32,7 +32,7 @@ int main() {
         g.info();
     }
 
-    g.findPath("1", "4");
+    g.findPath("1", "4");*/
 
     //delete g;
 

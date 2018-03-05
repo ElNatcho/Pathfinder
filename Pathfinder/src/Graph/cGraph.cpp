@@ -2,24 +2,16 @@
 
 // -- Konstruktor --
 cGraph::cGraph() {
-    // Alloc Mem
-    _createConnection_pattern = new std::regex();
-    _createNode_pattern = new std::regex();
-    _fileMgr = new cFileMgr();
-    _match = new std::smatch();
-    _nodes = new std::vector<cNode*>();
-    _dist = new std::map<std::string, distData>();
-
     // Werte setzen
-    *_createNode_pattern = "id=[\\w\\d_-]+";
-    *_createConnection_pattern = ">c_id=[\\w\\d]+.+"; // \t>c_id=[:word:]+[:space:]{1}w=[:digit:]+
+    _createNode_pattern = "id=[\\w\\d_-]+";
+    _createConnection_pattern = ">c_id=[\\w\\d]+.+";
 }
 
 // -- addNode --
 // Methode fügt einen neuen Knoten hinzu
-// @param id: ID des Knotens
-void cGraph::addNode(std::string id) {
-    _nodes->push_back(new cNode(id)); // Neuer Knoten wird in den Vector eingefügt
+// @param n: Knoten der hinzugefügt werden soll
+void cGraph::addNode(cNode *n) {
+    _nodes.push_back(n); // Neuer Knoten wird in den Vector eingefügt
 }
 
 // -- addConnection --
@@ -32,7 +24,11 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
     cNode *n1 = _getNode(id_1); // Knoten 1 setzen
     cNode *n2 = _getNode(id_2); // Knoten 2 setzen
     if(n1 != nullptr && n2 != nullptr) {  // Prüfen ob beide Knoten gefunden wurden
-        con = {n2, weight}; // Knoten 2 als Zielknoten und Gewichtung setzen
+        con = {n2, new float(weight), new sf::VertexArray(sf::Lines, 2)}; // Knoten 2 als Zielknoten und Gewichtung setzen
+        con.con->operator[](0).position = n1->getShape().getPosition(); // Position eines Endes der Verbindung festlegen
+        con.con->operator[](1).position = n2->getShape().getPosition(); // Position des anderen Endes der Verbindung festlegen
+        con.con->operator[](0).color = sf::Color::Black; // Farbe eines Endes der Verbindung festlegen
+        con.con->operator[](1).color = sf::Color::Black; // Farbe des anderen Endes der Verbindung festlegen
         n1->addConnection(con); // Verbindung in Knoten 1 einfügen
         con.n = n1; // Zielknoten in Konten 1 ändern
         n2->addConnection(con); // Verbindung in Knoten 2 einfügen
@@ -45,14 +41,14 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
 // @param id_d: Destination Knotne (Zielknoten)
 void cGraph::findPath(std::string id_s, std::string id_d) {
     if(!_initDistances(id_s)) { /* TODO: Error Handling */}
-    if(_dist->find(id_d) == _dist->end()) { /* TODO: Error Handling */} // Prüfen ob es den Zielknoten gibt
+    if(_dist.find(id_d) == _dist.end()) { /* TODO: Error Handling */} // Prüfen ob es den Zielknoten gibt
 
     float tmpMinDist = -1.F; // Temporäre Variable, die die kleinste aktuelle Entfernung speichert
     std::string tmpMinID = id_s; // Temporäre Variable, die die ID des Knoten speichert der die aktuell kleinste Entfernung zum Startknoten besitzt
 
     do { // Solange ausführen bis der Zielknoten gefunden wurde
         _doStep(tmpMinID); // Nächst besten Knoten besuchen
-        _dIt = _dist->find(tmpMinID); // Aktuellen Knoten als besucht markieren
+        _dIt = _dist.find(tmpMinID); // Aktuellen Knoten als besucht markieren
         _dIt->second.visited = true;  // *
 
         if(tmpMinID == id_d) { // Prüfen ob man am Zielknoten angelangt ist
@@ -63,7 +59,7 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
         tmpMinDist = -1.F;
         tmpMinID = "";
 
-        for(_dIt = _dist->begin(); _dIt != _dist->end(); _dIt++) { // Durch die gesamte Map iterieren
+        for(_dIt = _dist.begin(); _dIt != _dist.end(); _dIt++) { // Durch die gesamte Map iterieren
             if(!_dIt->second.visited && ((tmpMinDist <= 0) || ((_dIt->second.dist >= 0) && (_dIt->second.dist < tmpMinDist)))) { // Prüfen ob ein Knoten mit einer kleineren Entfernung gefunden wurde
                 tmpMinDist = _dIt->second.dist; // Aktuell kleinste Entfernung überschreiben
                 tmpMinID   = _dIt->first; // Knoten überschreiben
@@ -76,11 +72,11 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
 // Methode importiert einen Graphen aus einer Datei
 // @param path: Pfad zur/Name der Datei
 bool cGraph::importGraph(std::string path) {
-    if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+    /*if(!_fileMgr.openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
         return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
     }
-    std::vector<std::string> fc = _fileMgr->readFileContent(); // Daten auslesen
-    _fileMgr->closeFile(); // Datei schliessen
+    std::vector<std::string> fc = _fileMgr.readFileContent(); // Daten auslesen
+    _fileMgr.closeFile(); // Datei schliessen
 
     cNode *_tmpNode = nullptr; // Temporären Knoten erstellen
     std::string _tmpStr = ""; // Temporären String erstellen
@@ -89,18 +85,18 @@ bool cGraph::importGraph(std::string path) {
 
     if(fc.size() > 0) { // Prüfen ob Daten importiert wurden
         for(std::string str : fc) { // Druch alle Zeilen der ausgelesenen Datei iterieren
-            if (std::regex_search(str, *_match, *_createConnection_pattern)) { // Prüfen ob in der aktuellen Zeile eine neue Verbindung erstellt wird
-                _tmpStr = _match->str().substr(_match->str().find(">c_id=") + 6); // Alles bis eingeschlossen "c_id=" abtrennen
+            if (std::regex_search(str, _match, _createConnection_pattern)) { // Prüfen ob in der aktuellen Zeile eine neue Verbindung erstellt wird
+                _tmpStr = _match.str().substr(_match.str().find(">c_id=") + 6); // Alles bis eingeschlossen "c_id=" abtrennen
                 _tmpWeight = std::stof(_tmpStr.substr(_tmpStr.find(" w=") + 3, _tmpStr.size())); // Die Gewichtung aus dem String extrahieren, zu float konvertiern und abspeichern
                 _tmpStr = _tmpStr.substr(0, _tmpStr.find(" w=")); // Speichert die ID in _tmpStr
                 if(_tmpNode == nullptr) { return false; } // Parsing-Fehler auslösen falls kein Knoten erzeugt wurde
                 _conVec.push_back(std::make_pair(_tmpNode->getID(), std::make_pair(_tmpStr, _tmpWeight))); // Verbindung temporär in der Verbindungs-Map speichern
-            } else if(std::regex_search(str, *_match, *_createNode_pattern)) { // Prüfen ob in der aktuellen Zeile ein neuer Knoten erstellt wird
-                if(_tmpNode != nullptr) { _nodes->push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
-                _tmpNode = new cNode(_match->str().substr(3, _match->str().size())); // Neuen Knoten mit der ID des aktuell ausgelesenen Knoten erstellen
+            } else if(std::regex_search(str, _match, _createNode_pattern)) { // Prüfen ob in der aktuellen Zeile ein neuer Knoten erstellt wird
+                if(_tmpNode != nullptr) { _nodes.push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
+                _tmpNode = new cNode(_match.str().substr(3, _match.str().size())); // Neuen Knoten mit der ID des aktuell ausgelesenen Knoten erstellen
             }
         }
-        _nodes->push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
+        _nodes.push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
         for(auto c : _conVec) { // Durch alle temporär gespeicherte Verbindungen iterieren
             if(_tmpNode->getID() != c.first){ // Prüfen ob die Verbindung einen anderen Knoten hinzugefügt werden soll
                 _tmpNode = _getNode(c.first); // Knoten suchen und abspeichern
@@ -111,36 +107,97 @@ bool cGraph::importGraph(std::string path) {
         return true;
     } else { // Falls keine Daten importiert wurden
         return false; // Fehlschlag zurückgeben
-    }
+    }*/
+
+    return true;
 }
 
 // -- exportGraph --
 // Methode exportiert einen Graphen in eine Datei
 // @param path: Pfad zur/Name der Datei
-bool cGraph::exportGraph(std::string path) {
-    if(!_fileMgr->openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+// @param rWin: Das aktuelle Fenster
+// @param tex : Das aktuelle Bild
+bool cGraph::exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &tex) {
+    if(!_fileMgr.openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
         return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
     }
 
+    sf::Vector2f tmpPicPos; // Variable speichert temporär die Position des Knotens auf dem Bild
+
     // TODO: writeToFile Error Handling
-    for(auto n : *_nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
-        _fileMgr->writeToFile("id=" + n->getID() + "\n"); // ID des aktuellen Knotens in die Datei exportieren
+    for(auto n : _nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
+        _fileMgr.writeToFile("id=" + n->getID()); // ID des aktuellen Knotens in die Datei exportieren
+        _fileMgr.writeToFile(" pos=" + std::to_string(n->getShape().getPosition().x) + ":" + // Position des Knotens im Fenster abspeichern
+                                       std::to_string(n->getShape().getPosition().y));
+        tmpPicPos = com::getMousePosPic(sf::Vector2i(n->getShape().getPosition().x, // Position des Knotens auf dem Bild ausrechen
+                                                     n->getShape().getPosition().y),
+                                                     rWin, tex);
+        _fileMgr.writeToFile(" pic_pos=" + std::to_string(tmpPicPos.x) + ":" + // Position des Knotens im Bild abspeichern
+                                           std::to_string(tmpPicPos.y));
+        _fileMgr.writeToFile(" tags=" + n->getTags() + "\n"); // Tags des Knotens speichern
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
-            _fileMgr->writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
+            _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
         }
     }
 
-    _fileMgr->closeFile(); // Datei schliessen
+    _fileMgr.closeFile(); // Datei schliessen
     return true;
+}
+
+// -- checkNodeSelect --
+// Methode prüft ob ein Knoten angeklickt wurde und updatet ggf. dessen Aussehen
+// @param mousePos: Position der Maus im Fenster
+bool cGraph::checkNodeSelect(sf::Vector2f mousePos) {
+    cNode::CLICK_TYPE ct; //
+    for(cNode *n : _nodes) { // Durch alle Knoten iteriern
+        ct = n->toggleSelectIfClicked(mousePos); // Prüfen ob der aktuelle Knoten angeklickt wurde
+        if(ct == cNode::CLICK_TYPE::CL_SEL) { // Knoten wurde angeklickt und ist nun selektiert
+            _selectedNodes.push_back(n);
+            return true;
+        } else if(ct == cNode::CLICK_TYPE::CL_UNSEL) { // Knoten wurde angeklickt und wurde nun unselektiert
+            _selectedNodes.erase(std::remove(                     // Den nicht mehr ausgewählten Knoten
+                _selectedNodes.begin(), _selectedNodes.end(), n), // aus der selectedNodes Liste löschen
+                _selectedNodes.end());                            //
+            return true;
+        }
+    }
+    return false;
+}
+
+// --getSelectedNodes --
+// Methode gibt die aktuell ausgewählten Knoten zurück
+std::vector<cNode*> cGraph::getSelectedNodes() {
+    return _selectedNodes;
+}
+
+// -- deselectAllNodes --
+// Methode deselektiert alle aktuell ausgewählten Knoten
+void cGraph::deselectAllNodes() {
+    for (cNode *n : _selectedNodes) { // Durch alle ausgewählten Knoten iterieren
+        n->toggleSelect(); // Knoten deselektieren
+    }
+    _selectedNodes.clear(); // Alle Knoten aus der Liste löschen
 }
 
 // -- info --
 // Methode gibt eine Info zu allen Knoten und deren Verbindungen aus
 void cGraph::info() {
-    for(std::size_t i = 0; i < _nodes->size(); i++) { // Durch alle Knoten iterieren
-        std::cout << "<" << i << "> ID=" << _nodes->at(i)->getID() << " ADDR=" << _nodes->at(i) << " Verbindungen:" << std::endl;
-        for(auto i : _nodes->at(i)->getConnections()) { // Verbindungen des aktuellen Knotens bekommen und durch diese iteriern
+    for(std::size_t i = 0; i < _nodes.size(); i++) { // Durch alle Knoten iterieren
+        std::cout << "<" << i << "> ID=" << _nodes.at(i)->getID() << " ADDR=" << _nodes.at(i) << " Verbindungen:" << std::endl;
+        for(auto i : _nodes.at(i)->getConnections()) { // Verbindungen des aktuellen Knotens bekommen und durch diese iteriern
             std::cout << "\t >n.ID=" << i.n->getID() << " n.ADDR=" << i.n << " gew=" << i.weight << std::endl;
+        }
+    }
+}
+
+// -- renderGraph --
+// Methode rendert den Graphen
+// @param rWin: Fenster in dem der Graph gezeichnet werden soll
+void cGraph::renderGraph(sf::RenderWindow &rWin) {
+    for(cNode *n : _nodes) { // Durch alle Knoten iterieren
+        rWin.draw(n->getShape()); // Knoten darstellen
+        for(cNode::sConnection con : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iteriern
+            rWin.draw(*con.con); // Aktuelle Verbindung zeichnen
         }
     }
 }
@@ -149,8 +206,8 @@ void cGraph::info() {
 // Methode gibt einen Knoten mit einer bestimmten ID zurück
 // @param id: ID des gesuchten Knotens
 cNode* cGraph::_getNode(std::string id) {
-    for(std::size_t i = 0; i < _nodes->size(); i++) { // Prüfen ob der gesuchte Knoten gefunden wurde
-        if(_nodes->at(i)->getID() == id) return _nodes->at(i); // Den gesuchten Knoten zurückgeben
+    for(std::size_t i = 0; i < _nodes.size(); i++) { // Prüfen ob der gesuchte Knoten gefunden wurde
+        if(_nodes.at(i)->getID() == id) return _nodes.at(i); // Den gesuchten Knoten zurückgeben
     }
     return nullptr; // nullptr zurückgeben falls nichts gefunden wurde
 }
@@ -159,9 +216,9 @@ cNode* cGraph::_getNode(std::string id) {
 // Methode initialisiert die Entfernungen zu allen anderen Knoten
 // @param snode: Startpunkt des aktuell gesuchten Pfades
 bool cGraph::_initDistances(std::string snode) {
-    for(auto n : *_nodes) { _dist->insert(std::make_pair(n->getID(), distData{-1, nullptr, false})); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
-    _dIt = _dist->find(snode); // Startknoten suchen und im Iterator speichern
-    if(_dIt != _dist->end()) { // Prüfen ob der Knoten gefunden wurde
+    for(auto n : _nodes) { _dist.insert(std::make_pair(n->getID(), distData{-1, nullptr, false})); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
+    _dIt = _dist.find(snode); // Startknoten suchen und im Iterator speichern
+    if(_dIt != _dist.end()) { // Prüfen ob der Knoten gefunden wurde
         _dIt->second.dist = 0; // Startknoten hat keine Entfernung zu sich selbst
         _dIt->second.visited = true; // Knoten kann sich nicht selbst nicht besuchen
         _startNode = _getNode(_dIt->first); // Startknoten abspeichern
@@ -184,9 +241,9 @@ bool cGraph::_doStep(std::string id) {
     std::vector<cNode::sConnection> conns = curNode->getConnections(); // Alle Verbindungen des aktuellen Knoten bekommen
 
     for(auto con : conns) { // Durch alle Verbindungen iterieren
-        tmpDist = _dist->find(id)->second.dist + con.weight; // Entfernung zum aktuellen Zielknoten
-        _dIt = _dist->find(con.n->getID()); // Aktuellen Zielknoten bekommen
-        if(_dIt != _dist->end()) { // Prüfen ob der Zielknoten gefunden wurde
+        tmpDist = _dist.find(id)->second.dist + *con.weight; // Entfernung zum aktuellen Zielknoten
+        _dIt = _dist.find(con.n->getID()); // Aktuellen Zielknoten bekommen
+        if(_dIt != _dist.end()) { // Prüfen ob der Zielknoten gefunden wurde
             if((_dIt->second.dist > tmpDist) || (_dIt->second.dist < 0)) { // Prüfen ob ein (schnellerer) Weg zum Zielknoten gefunden wurde
                 _dIt->second.dist = tmpDist;   // Alte Entfernung überschreiben
                 _dIt->second.origin = curNode; // Ursprungsknoten überschreiben
@@ -203,11 +260,11 @@ bool cGraph::_doStep(std::string id) {
 // @param id_s: Source Knoten (Startknoten)
 // @param id_d: Destination Knotne (Zielknoten)
 void cGraph::_evaluatePath(std::string id_s, std::string id_d) {
-    _dIt = _dist->find(id_d); // Zielknoten finden
+    _dIt = _dist.find(id_d); // Zielknoten finden
     do {
         std::cout << _dIt->first << " < ";
         if(_dIt->first == id_s) { break; } // Beim Startknoten abbrechen
-        _dIt = _dist->find(_dIt->second.origin->getID()); // Ursprungsknoten finden
+        _dIt = _dist.find(_dIt->second.origin->getID()); // Ursprungsknoten finden
     } while(true);
     std::cout << std::endl;
 }
@@ -217,19 +274,6 @@ cGraph::~cGraph() {
     // Free Mem
 
     // node-vector freigeben
-    for(auto i : *_nodes) { SAFE_DELETE(i); } // Alle Nodes im Vector löschen
-    SAFE_DELETE(_nodes); // Vector löschen
-
-    // Dist-Map freigeben
-    _dist->clear(); // Alle Einträge löschen
-    SAFE_DELETE(_dist); // _dist-Map löschen
-
-    // FileMgr freigeben
-    SAFE_DELETE(_fileMgr);
-
-    // Regex Variablen freigeben
-    SAFE_DELETE(_match);
-    SAFE_DELETE(_createNode_pattern);
-    SAFE_DELETE(_createConnection_pattern);
-
+    for(auto i : _nodes) { SAFE_DELETE(i); } // Alle Nodes im Vector löschen
+    _nodes.clear();
 }

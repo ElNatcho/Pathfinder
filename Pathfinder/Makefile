@@ -7,16 +7,17 @@ SRC_DIR := $(P_ROOT)/src
 REL_DIR := $(P_ROOT)/bin/release
 DBG_DIR := $(P_ROOT)/bin/debug
 C_MODE := R
+USR_INCS := /usr/local/include
 
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14 -Wall
-L_F := -o $(NAME) -Wall
+C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml
+L_F := -o $(NAME) -Wall -lsfml-graphics -lsfml-window -lsfml-system -lX11 -lGL
 D_F := -g
 
 # Source Dateien
-SRC := $(SRC_DIR)/*.cpp $(SRC_DIR)/Graph/*.cpp $(SRC_DIR)/Graph/FileMgr/*.cpp
-HED := $(SRC_DIR)/*.hpp $(SRC_DIR)/Graph/*.hpp $(SRC_DIR)/Graph/FileMgr/*.hpp
+SRC := $(shell find -name *.cpp)
+HED := $(shell find -name *.hpp)
 OBJ := main.o cGraph.o cNode.o cFileMgr.o
 
 all: $(OBJ)
@@ -39,7 +40,7 @@ endif
 .PHONY: clean
 clean:
 	-rm -f $(OBJ)
-	-rm -f $(SRC_DIR)/*.hpp.gch $(SRC_DIR)/Graph/*.hpp.gch $(SRC_DIR)/Graph/FileMgr/*.hpp.gch
+	-rm -f $(shell find -name *.hpp.gch)
 ifeq ($(C_MODE), R)
 	mv $(NAME) $(REL_DIR)
 else
