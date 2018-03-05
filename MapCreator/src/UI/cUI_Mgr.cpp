@@ -4,7 +4,8 @@
 // @param graph: Zeiger zu dem Graphen der erstellt werden soll
 cUI_Mgr::cUI_Mgr(cGraph *graph) {
     // Alloc Mem
-    _newNodeID = new char[255];
+    _newNodeID = new char[50];
+    _nodeTags  = new char[100];
 
     // Werte setzen
     _graph = graph;
@@ -28,12 +29,16 @@ bool cUI_Mgr::renderAddNode_UI(sf::Vector2f mouse_win_pos, sf::Vector2f mouse_pi
         " Y: " + std::to_string(mouse_pic_pos.y)).c_str());
 
     // ID des Knotens abfragen
-    ImGui::InputText("ID", _newNodeID, 255);
+    ImGui::InputText("ID (max_len = 50)", _newNodeID, 50);
+
+    // Tags des Knotens abfragen
+    ImGui::InputText("Tags (max_len = 100)", _nodeTags, 100);
 
     // Falls der OK Button gedrückt wird ..
     if(ImGui::Button("OK") && _newNodeID[0] != '\0') {
-        _graph->addNode(std::string(_newNodeID), mouse_win_pos); // Den neuen Knoten erstellen
+        _graph->addNode(new cNode(std::string(_newNodeID), mouse_win_pos, std::string(_nodeTags))); // Den neuen Knoten erstellen
         _newNodeID[0] = '\0'; // String zurücksetzen
+        _nodeTags[0]  = '\0'; // String zurücksetzen
         ImGui::End();
         return false; // Zeichnen des UI-Elements beenden
     } else if(ImGui::Button("Abbrechen")) {

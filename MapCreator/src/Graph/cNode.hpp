@@ -27,13 +27,14 @@ public:
     };
 
     // -- Kon/Destruktor --
-    cNode(std::string id, sf::Vector2f node_pos);
+    cNode(std::string id, sf::Vector2f node_pos, std::string tag);
     ~cNode();
 
     // -- Public Methods --
     void addConnection(sConnection con); // Methode fügt eine Verbindung hinzu
 
     std::string getID(); // Gibt die ID des Knotens zurück
+    std::string getTags(); // Gibt die Tags des Knotens zurück
     sf::CircleShape getShape(); // Gibt _nodeSpr zurück
     std::vector<sConnection> getConnections(); // Methode gibt alle Verbindungen des Kotens zurück
 
@@ -44,7 +45,9 @@ private:
 
     // Private Vars
     std::vector<sConnection> _connections; // Vector speichert alle Verbindungen des Knotens
+
     std::string _id; // ID des Knotens
+    std::string _tags; // Tags des Knotens
 
     sf::CircleShape _nodeSpr; // Kreis der den Knoten darstellt
 

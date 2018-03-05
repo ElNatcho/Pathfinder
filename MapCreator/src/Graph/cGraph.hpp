@@ -21,7 +21,7 @@ public:
     ~cGraph();
 
     // -- Public Methods --
-    void addNode(std::string id, sf::Vector2f &node_pos); // Methode fügt einen neuen Knoten hinzu
+    void addNode(cNode *n); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei

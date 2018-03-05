@@ -9,9 +9,9 @@ cGraph::cGraph() {
 
 // -- addNode --
 // Methode fügt einen neuen Knoten hinzu
-// @param id: ID des Knotens
-void cGraph::addNode(std::string id, sf::Vector2f &node_pos) {
-    _nodes.push_back(new cNode(id, node_pos)); // Neuer Knoten wird in den Vector eingefügt
+// @param n: Knoten der hinzugefügt werden soll
+void cGraph::addNode(cNode *n) {
+    _nodes.push_back(n);
 }
 
 // -- addConnection --
@@ -99,7 +99,8 @@ bool cGraph::exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &
                                                      n->getShape().getPosition().y),
                                         rWin, tex);
         _fileMgr.writeToFile(" pic_pos=" + std::to_string(tmpPicPos.x) + ":" + // Position des Knotens im Bild abspeichern
-                                           std::to_string(tmpPicPos.y) + "\n");
+                                           std::to_string(tmpPicPos.y));
+        _fileMgr.writeToFile(" tags=" + n->getTags() + "\n"); // Tags des Knotens speichern
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
             _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
         }

@@ -3,10 +3,12 @@
 // -- Konstruktor --
 // @param id      : ID des Knotens
 // @param node_pos: Position des Knotens auf der Karte
-cNode::cNode(std::string id, sf::Vector2f node_pos) {
+// @param tag     : Tag(s) die der Knoten besitzt
+cNode::cNode(std::string id, sf::Vector2f node_pos, std::string tag = "") {
     // Werte setzen
     _id = id;
     _isSelected = false;
+    _tags = tag;
 
     // Eigenschaften des repräsentativen Kreises festlegen
     _nodeSpr.setOrigin(5.F, 5.F);
@@ -15,12 +17,19 @@ cNode::cNode(std::string id, sf::Vector2f node_pos) {
     _nodeSpr.setOutlineThickness(1.F);
     _nodeSpr.setOutlineColor(sf::Color::Black);
     _nodeSpr.setFillColor(sf::Color::Red);
+
 }
 
 // -- getID --
 // Methdode gibt die ID des Knotens zurück
 std::string cNode::getID() {
     return _id;
+}
+
+// -- getTags --
+// Methode gibt die Tags des Knoten zurück
+std::string cNode::getTags() {
+    return _tags;
 }
 
 // -- getShape --

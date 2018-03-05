@@ -27,6 +27,7 @@ private:
     std::vector<cNode*> _selectedNodes; // Aktuell ausgewählte Knoten
 
     char *_newNodeID; // ID des Knotens der neu hinzugefügt wird
+    char *_nodeTags;  // Tags die dem Knoten hinzugefügt werden sollen
     float _newWeight; // Gewichtung einer neuen Verbindung
 
 };
