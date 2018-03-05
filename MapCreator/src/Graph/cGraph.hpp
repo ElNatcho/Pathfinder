@@ -25,7 +25,7 @@ public:
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
-    bool exportGraph(std::string path); // Exportiert einen Graphen aus einer Datei
+    bool exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &tex); // Exportiert einen Graphen aus einer Datei
 
     bool checkNodeSelect(sf::Vector2f mousePos); // Prüft ob ein Knoten angeklickt wurde
     std::vector<cNode*> getSelectedNodes(); // Gibt die aktuell ausgewählten Knoten zurück

@@ -81,14 +81,25 @@ bool cGraph::importGraph(std::string path) {
 // -- exportGraph --
 // Methode exportiert einen Graphen in eine Datei
 // @param path: Pfad zur/Name der Datei
-bool cGraph::exportGraph(std::string path) {
+// @param rWin: Das aktuelle Fenster
+// @param tex : Das aktuelle Bild
+bool cGraph::exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &tex) {
     if(!_fileMgr.openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
         return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
     }
 
+    sf::Vector2f tmpPicPos; // Variable speichert temporär die Position des Knotens auf dem Bild
+
     // TODO: writeToFile Error Handling
     for(auto n : _nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
-        _fileMgr.writeToFile("id=" + n->getID() + "\n"); // ID des aktuellen Knotens in die Datei exportieren
+        _fileMgr.writeToFile("id=" + n->getID()); // ID des aktuellen Knotens in die Datei exportieren
+        _fileMgr.writeToFile(" pos=" + std::to_string(n->getShape().getPosition().x) + ":" + // Position des Knotens im Fenster abspeichern
+                                       std::to_string(n->getShape().getPosition().y));
+        tmpPicPos = com::getMousePosPic(sf::Vector2i(n->getShape().getPosition().x, // Position des Knotens auf dem Bild ausrechen
+                                                     n->getShape().getPosition().y),
+                                        rWin, tex);
+        _fileMgr.writeToFile(" pic_pos=" + std::to_string(tmpPicPos.x) + ":" + // Position des Knotens im Bild abspeichern
+                                           std::to_string(tmpPicPos.y) + "\n");
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
             _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
         }

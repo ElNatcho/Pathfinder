@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
 
             // Fenster schliessen falls der User es schliessen will
             if(sfEvent.type == sf::Event::Closed) {
+                graph.exportGraph("test.graph", window, tex);
                 window.close();
             }
 
