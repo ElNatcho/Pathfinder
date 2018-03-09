@@ -3,9 +3,9 @@
 #include<imgui-SFML.h>
 #include<iostream>
 #include<string>
-#include"Graph/cGraph.hpp"
+#include<Core/Graph/cGraph.hpp>
+#include<Core/common.hpp>
 #include"UI/cUI_Mgr.hpp"
-#include"common.hpp"
 
 int main(int argc, char **argv) {
     // Prüfen ob ein Bild zum laden übergeben wurde

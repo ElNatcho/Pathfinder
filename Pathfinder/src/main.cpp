@@ -1,8 +1,10 @@
 #include<iostream>
-#include"Graph/cGraph.hpp"
+#include"Core/Graph/cGraph.hpp"
 
 int main() {
     cGraph g;
+
+    std::cout << "Hello, World!" << std::endl;
 
     /*g.addNode("1");
     g.addNode("2");
