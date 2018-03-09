@@ -3,8 +3,8 @@
 #include<imgui-SFML.h>
 #include<iostream>
 #include<string>
-#include<Core/Graph/cGraph.hpp>
-#include<Core/common.hpp>
+#include"Core/Graph/cGraph.hpp"
+#include"Core/common.hpp"
 #include"UI/cUI_Mgr.hpp"
 
 int main(int argc, char **argv) {
