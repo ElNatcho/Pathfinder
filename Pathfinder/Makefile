@@ -11,7 +11,7 @@ USR_INCS := /usr/local/include
 
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(P_ROOT)
+C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml -I $(P_ROOT)
 L_F := -o $(NAME) -Wall -lsfml-graphics -lsfml-window -lsfml-system -lX11 -lGL
 D_F := -g
 
@@ -29,7 +29,7 @@ else
 endif
 	make clean
 
-$(OBJ): $(SRC_DIR)
+$(OBJ): $(SRC)
 	# Sourcedateien kompilieren
 ifeq ($(C_MODE), R)
 

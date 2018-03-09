@@ -18,7 +18,7 @@ D_F := -g
 # Source Dateien
 SRC := $(shell find -name *.cpp)
 HED := $(shell find -name *.hpp)
-OBJ := main.o imgui.o imgui_demo.o imgui_draw.o imgui-SFML.o cUI_Mgr.o $(P_ROOT)/Core/obj/*
+OBJ := main.o cUI_Mgr.o $(P_ROOT)/Core/obj/*
 
 all: $(OBJ)
 	# Objektdateien verlinken
@@ -29,7 +29,7 @@ else
 endif
 	make clean
 
-$(OBJ): $(SRC_DIR)
+$(OBJ): $(SRC)
 	# Sourcedateien kompilieren
 ifeq ($(C_MODE), R)
 

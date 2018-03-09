@@ -7,13 +7,13 @@ USR_INCS := /usr/local/include
 
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14 -Wall -I $(USR_INCS)
+C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml
 D_F := -g
 
 # Source Dateien
 SRC := $(shell find -name *.cpp)
 HED := $(shell find -name *.hpp)
-OBJ := cGraph.o cNode.o cFileMgr.o
+OBJ := cGraph.o cNode.o cFileMgr.o imgui_demo.o imgui_draw.o imgui-SFML.o imgui.o
 
 all: $(SRC_DIR)
 	# Die alten Objekt-Dateien löschen

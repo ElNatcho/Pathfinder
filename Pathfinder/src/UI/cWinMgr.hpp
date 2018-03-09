@@ -3,6 +3,8 @@
 
 // Includes
 #include<SFML/Graphics.hpp>
+#include<imgui.h>
+#include<imgui-SFML.h>
 #include<iostream>
 
 // cWinMgr
@@ -28,7 +30,8 @@ private:
 
     // -- Private Vars --
     sf::RenderWindow _win;
-    sf::Event        _sfEvent;
+    sf::Event _sfEvent;
+    sf::Clock _deltaClock;
 
 
 };
