@@ -3,7 +3,7 @@
 // -- Konstruktor --
 // @param map_path: Pfad zur/Name der Datei welche die Karte beinhaltet
 // @param g       : Zeiger zum Graphen der Karte
-cWinMgr::cWinMgr(std::string map_path, cGraph *g) {
+cWinMgr::cWinMgr(std::string map_path, cGraph *g) : _mapViewer(g){
     // Werte setzen und Fenster erstellen
     _window.create(sf::VideoMode(1280, 720), "Pathfinder"); // Fenster erstellen
     running = true;

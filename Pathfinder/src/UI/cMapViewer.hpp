@@ -12,7 +12,7 @@
 class cMapViewer {
 public:
     // -- Kon/Destruktor --
-    cMapViewer();
+    cMapViewer(cGraph *g);
     ~cMapViewer();
 
     // -- Methoden --
@@ -23,9 +23,12 @@ public:
 
 private:
     // -- Private Vars --
-    sf::View _mapView;
-    sf::Texture _mapTex;
-    sf::Sprite  _mapSpr;
+    sf::View _mapView; // Ausschnitt des Fensters in dem die Karte gezeichnet wird
+    sf::Texture _mapTex; // Textur der Karte
+    sf::Sprite  _mapSpr; // Sprite das die Karte darstellt
+
+    cGraph *_graph;
+
 };
 
 #endif

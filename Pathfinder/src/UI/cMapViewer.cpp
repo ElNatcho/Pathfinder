@@ -1,8 +1,10 @@
 #include"cMapViewer.hpp"
 
 // -- Konstruktor --
-cMapViewer::cMapViewer() {
-    // View initialisieren
+// @param g: Graph der auf der Karte gezeichnet werden soll
+cMapViewer::cMapViewer(cGraph *g) {
+    // Werte setzen
+    _graph = g;
 }
 
 // -- loadMap --
@@ -35,6 +37,9 @@ void cMapViewer::render(sf::RenderWindow &rWin) {
 
     // Sprites zeichnen
     rWin.draw(_mapSpr);
+
+    // Graph zeichnen
+    _graph->renderGraph(rWin);
 
 }
 
