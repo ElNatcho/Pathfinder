@@ -6,12 +6,13 @@
 #include<imgui.h>
 #include<imgui-SFML.h>
 #include<iostream>
+#include"cMapViewer.hpp"
 
 // cWinMgr
 class cWinMgr {
 public:
     // -- Kon/Destruktor --
-    cWinMgr();
+    cWinMgr(std::string map_path);
     ~cWinMgr();
 
     // -- Methoden --
@@ -29,9 +30,11 @@ public:
 private:
 
     // -- Private Vars --
-    sf::RenderWindow _win;
+    sf::RenderWindow _window;
     sf::Event _sfEvent;
     sf::Clock _deltaClock;
+
+    cMapViewer _mapViewer;
 
 
 };
