@@ -2,10 +2,12 @@
 
 // -- Konstruktor --
 // @param map_path: Pfad zur/Name der Datei welche die Karte beinhaltet
-cWinMgr::cWinMgr(std::string map_path) {
+// @param g       : Zeiger zum Graphen der Karte
+cWinMgr::cWinMgr(std::string map_path, cGraph *g) {
     // Werte setzen und Fenster erstellen
     _window.create(sf::VideoMode(1280, 720), "Pathfinder"); // Fenster erstellen
     running = true;
+    _graph  = g;
 
     // ImGui erstellen
     ImGui::CreateContext();
@@ -14,6 +16,10 @@ cWinMgr::cWinMgr(std::string map_path) {
     // MapViewer setup
     _mapViewer.loadMap(map_path);
     _mapViewer.updateView(_window);
+
+    // SearchUI setup
+    _searchUI.updateWinSize(_window);
+    ImGui::StyleColorsLight();
 }
 
 // -- run --
@@ -43,6 +49,7 @@ void cWinMgr::processEvents() {
         // Prüfen ob die Fenstergröße verändert wird
         if(_sfEvent.type == sf::Event::Resized) {
             _mapViewer.updateView(_window); // Größe der Karte usw anpassen
+            _searchUI.updateWinSize(_window); // Größe des Search UI anpassen
         }
     }
 }
@@ -57,13 +64,12 @@ void cWinMgr::update() {
 // -- render --
 // Methode zeichnet Objekte
 void cWinMgr::render() {
-    _window.clear(sf::Color::Red);
+    _window.clear(sf::Color::White);
 
     //ImGui::ShowDemoWindow();
-    /*ImGui::Begin("Test");
-    ImGui::SetWindowPos(ImVec2(0,0), true);
-    ImGui::SetWindowSize(ImVec2(300, _window.getSize().y));
-    ImGui::End();*/
+
+    // Search UI zeichnen
+    _searchUI.render(_window);
 
     // ImGui zeichnen
     ImGui::SFML::Render(_window);

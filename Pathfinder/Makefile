@@ -9,18 +9,21 @@ DBG_DIR := $(P_ROOT)/$(NAME)/bin/debug
 C_MODE := R
 USR_INCS := /usr/local/include
 
+# Platzhalter für die Objekte um miltiple Kompilierung zu verhindern
+.PHONY: OBJs
+
 # Kompiler und dessen Flags
 CXX := g++
-C_F := -c -std=c++14 -Wall -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml -I $(P_ROOT)
+C_F := -c -std=c++14 -I $(USR_INCS) -I $(USR_INCS)/imgui -I $(USR_INCS)/imgui-sfml -I $(P_ROOT)
 L_F := -o $(NAME) -Wall -lsfml-graphics -lsfml-window -lsfml-system -lX11 -lGL
 D_F := -g
 
 # Source Dateien
 SRC := $(shell find -name *.cpp)
 HED := $(shell find -name *.hpp)
-OBJ := main.o cWinMgr.o cMapViewer.o $(P_ROOT)/Core/obj/*
+OBJ := main.o cWinMgr.o cMapViewer.o cSearchUI.o $(P_ROOT)/Core/obj/*
 
-all: $(OBJ)
+all: OBJs
 	# Objektdateien verlinken
 ifeq ($(C_MODE), R)
 	$(CXX) $(L_F) $(OBJ)
@@ -29,24 +32,14 @@ else
 endif
 	make clean
 
-$(OBJ): $(SRC)
+OBJs: $(SRC)
 	# Sourcedateien kompilieren
 ifeq ($(C_MODE), R)
-
 	$(CXX) $(C_F) $(SRC)
-	# Prüfen ob Headerdateien vorhanden sind
-ifdef HED
 	$(CXX) $(C_F) $(HED)
-endif
-
 else
-
 	$(CXX) $(C_F) $(D_F) $(SRC)
-	# Prüfen ob Headerdateien vorhanden sind
-ifdef HED
 	$(CXX) $(C_F) $(D_F) $(HED)
-endif
-
 endif
 
 .PHONY: clean

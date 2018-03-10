@@ -4,6 +4,7 @@
 // Includes
 #include<SFML/Graphics.hpp>
 #include<iostream>
+#include"Core/Graph/cGraph.hpp"
 
 #define X_SIZE_RATIO 0.7F
 

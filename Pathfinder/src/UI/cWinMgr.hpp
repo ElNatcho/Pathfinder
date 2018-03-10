@@ -6,13 +6,15 @@
 #include<imgui.h>
 #include<imgui-SFML.h>
 #include<iostream>
+#include"Core/Graph/cGraph.hpp"
 #include"cMapViewer.hpp"
+#include"cSearchUI.hpp"
 
 // cWinMgr
 class cWinMgr {
 public:
     // -- Kon/Destruktor --
-    cWinMgr(std::string map_path);
+    cWinMgr(std::string map_path, cGraph *g);
     ~cWinMgr();
 
     // -- Methoden --
@@ -34,8 +36,10 @@ private:
     sf::Event _sfEvent;
     sf::Clock _deltaClock;
 
-    cMapViewer _mapViewer;
+    cMapViewer _mapViewer; // Verwaltung der Karte, Zeichnen der Knoten/Verbindungen
+    cSearchUI  _searchUI; // Verwalten und darstellen des UI
 
+    cGraph *_graph; // Graph der die Routen durch die Karte darstellt
 
 };
 
