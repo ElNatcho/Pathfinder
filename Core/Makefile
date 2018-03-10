@@ -30,3 +30,8 @@ endif
 	-mv *.o $(P_ROOT)/obj
 	# Kompilierte(??) Headerdateien löschen
 	-rm $(shell find -name *.hpp.gch)
+
+.PHONY: clean
+clean:
+	-rm -f *.o
+	-rm -f $(shell find -name *.hpp.gch)

@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
 
     cGraph graph;
     graph.importGraph(argv[2]);
+    graph.info();
 
     cWinMgr winMgr(argv[1], &graph);
 

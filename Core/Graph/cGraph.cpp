@@ -3,7 +3,7 @@
 // -- Konstruktor --
 cGraph::cGraph() {
     // Werte setzen
-    _createNode_pattern = "id=[\\w\\d_-]+";
+    _createNode_pattern = "id=[\\w\\d_-]+.+";
     _createConnection_pattern = ">c_id=[\\w\\d]+.+";
 }
 
@@ -72,42 +72,95 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
 // Methode importiert einen Graphen aus einer Datei
 // @param path: Pfad zur/Name der Datei
 bool cGraph::importGraph(std::string path) {
-    /*if(!_fileMgr.openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
+    if(!_fileMgr.openFile(path)) { // Datei öffnen und prüfen ob sie korrekt geöffnet wurde
         return false; // Vorgang abbrechen falls die Datei nicht geöffnet werden konnte
     }
     std::vector<std::string> fc = _fileMgr.readFileContent(); // Daten auslesen
     _fileMgr.closeFile(); // Datei schliessen
 
     cNode *_tmpNode = nullptr; // Temporären Knoten erstellen
-    std::string _tmpStr = ""; // Temporären String erstellen
-    float _tmpWeight = 0.F; // Temporäre Gewichtung erstellen
+    std::string _tmpStr = "";  // Temporären String erstellen
+    std::string _tmpTag = "";  // Temporären String für die Tags des Knoten erstellen
+    float _tmpWeight = 0.F;    // Temporäre Gewichtung erstellen
+    sf::Vector2f _tmpPos;      // Temporäre Knoten-Position erstellen
+    // Aufbau des _conVec-Vectors:
+    // ID - Verbindungen
+    //        -> ID - Gewichtung
     std::vector<std::pair<std::string, std::pair<std::string, float>>> _conVec; // Speichert temporär die Verbindungen zwischen Knoten
+
+    cNode *_tmpTargetNode = nullptr; // Temporären Zielknoten erstellen
+    cNode::sConnection _tmpCon = {};  // Temporäre Verbindung erstellen
 
     if(fc.size() > 0) { // Prüfen ob Daten importiert wurden
         for(std::string str : fc) { // Druch alle Zeilen der ausgelesenen Datei iterieren
             if (std::regex_search(str, _match, _createConnection_pattern)) { // Prüfen ob in der aktuellen Zeile eine neue Verbindung erstellt wird
+
+                // Gewichtung und ID aus dem String extrahieren
                 _tmpStr = _match.str().substr(_match.str().find(">c_id=") + 6); // Alles bis eingeschlossen "c_id=" abtrennen
                 _tmpWeight = std::stof(_tmpStr.substr(_tmpStr.find(" w=") + 3, _tmpStr.size())); // Die Gewichtung aus dem String extrahieren, zu float konvertiern und abspeichern
                 _tmpStr = _tmpStr.substr(0, _tmpStr.find(" w=")); // Speichert die ID in _tmpStr
                 if(_tmpNode == nullptr) { return false; } // Parsing-Fehler auslösen falls kein Knoten erzeugt wurde
-                _conVec.push_back(std::make_pair(_tmpNode->getID(), std::make_pair(_tmpStr, _tmpWeight))); // Verbindung temporär in der Verbindungs-Map speichern
+                // Verbindung temporär in der Verbindungs-Map speichern
+                _conVec.push_back(std::make_pair(_tmpNode->getID(), std::make_pair(_tmpStr, _tmpWeight)));
+
             } else if(std::regex_search(str, _match, _createNode_pattern)) { // Prüfen ob in der aktuellen Zeile ein neuer Knoten erstellt wird
+
                 if(_tmpNode != nullptr) { _nodes.push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
-                _tmpNode = new cNode(_match.str().substr(3, _match.str().size())); // Neuen Knoten mit der ID des aktuell ausgelesenen Knoten erstellen
+                _tmpStr = _match.str(); // String in der Temporären String Variable speichern zwecks einfacherer Handhabung
+                _tmpTag = _tmpStr.substr(_tmpStr.find("tags") + 4, _tmpStr.size()); // Tags aus dem String extrahieren
+                // !!! pic_pos wird NICHT importiert
+                _tmpStr = _tmpStr.substr(0, _tmpStr.find("pic_pos") - 1); // Alles ab pic_pos verwerfen
+                std::cout << _tmpStr.substr(_tmpStr.find(":") + 1, _tmpStr.size() - 2) << std::endl;
+                _tmpPos.y = std::stof(_tmpStr.substr(_tmpStr.find(":") + 1, _tmpStr.size() - 2)); // Y-Koordinate extrahieren, zu float konvertieren und abspeichern
+                _tmpPos.x = std::stof(_tmpStr.substr(_tmpStr.find("pos=") + 4, _tmpStr.find(":") - 1)); // X-Koordinate extrahieren, zu float konvertieren und abspeichern
+                _tmpStr = _tmpStr.substr(3, _tmpStr.find("pos=") - 4); // ID extrahieren und den Rest verwerfen
+                _tmpNode = new cNode(_tmpStr, _tmpPos, _tmpTag); // Neuen Knoten mit den ausgelesenen Daten einfügen
+
             }
         }
         _nodes.push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
-        for(auto c : _conVec) { // Durch alle temporär gespeicherte Verbindungen iterieren
-            if(_tmpNode->getID() != c.first){ // Prüfen ob die Verbindung einen anderen Knoten hinzugefügt werden soll
-                _tmpNode = _getNode(c.first); // Knoten suchen und abspeichern
+        std::pair<std::string, std::pair<std::string, float>> c; // Temporärer speicher für Verbindungsinformationen
+        while(_conVec.size() > 0){ // Durch alle Verbindungsinformatione iterieren
+            c = _conVec.at(0);
+            // Knoten laden und prüfen ob alles OK ist
+            _tmpNode = _getNode(c.first); // Source-Knoten aus dem Knoten Vector laden
+            _tmpTargetNode = _getNode(c.second.first); // Target-Knoten aus dem Knoten Vector laden
+            if(_tmpNode == _tmpTargetNode){ // Falls eine Verbindung zu sich selbst aufgebaut werden soll aktuellen vorgang abbrechen und mit der nächsten Verbindung weiter machen
+                continue;
             }
-            _tmpNode->addConnection({_getNode(c.second.first), c.second.second}); // Verbindung hinzufügen
+            // Verbindung erstellen
+            _tmpCon.weight = new float(c.second.second); // Gewichtung speichern
+            _tmpCon.n      = _tmpTargetNode;  // Zielknoten speichern
+            _tmpCon.con    = new sf::VertexArray(sf::Lines, 2); // Verbindungs-Vertexarray darstellen
+            _tmpCon.con->operator[](0).position = _tmpNode->getShape().getPosition();       // Position eines Endes der Verbindung festlegen
+            _tmpCon.con->operator[](1).position = _tmpTargetNode->getShape().getPosition(); // Position des anderen Endes der Verbindung festlegen
+            _tmpCon.con->operator[](0).color = sf::Color::Black; // Farbe eines Endes der Verbindung festlegen
+            _tmpCon.con->operator[](1).color = sf::Color::Black; // Farbe des anderen Endes der Verbindung festlegen
+
+            // Dem aktuellen Source-Knoten die Verbindung hinzufügen
+            _tmpNode->addConnection(_tmpCon);
+
+            // Aktuellen Verbindungseintrag löschen
+            _conVec.erase(std::remove(_conVec.begin(), _conVec.end(), c), _conVec.end());
+
+            // Den Vector nach der aktuellen Verbindung durchsuchen
+            for(int i = _conVec.size() - 1; i > 0; i--) {
+                // Prüfen ob in dieser Verbindung ..
+                if (_conVec.at(i).first        == _tmpTargetNode->getID() && // .. der Ausgangsknoten der aktuelle Zielknoten ist und ..
+                    _conVec.at(i).second.first == _tmpNode->getID()) { // .. ob der Zielknoten der aktuelle Ausgangsknoten is
+                    _tmpCon.n = _tmpNode; // Aktuellen Ausgangsknoten als Zielknoten setzen
+                    _tmpTargetNode->addConnection(_tmpCon); // Aktuellen Zielknoten die Verbindung hinzufügen
+                    _conVec.erase(_conVec.begin() + i); // Aktuellen Eintrag löschen
+                }
+            }
+
+
         }
 
         return true;
     } else { // Falls keine Daten importiert wurden
         return false; // Fehlschlag zurückgeben
-    }*/
+    }
 
     return true;
 }
@@ -134,7 +187,7 @@ bool cGraph::exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &
                                                      rWin, tex);
         _fileMgr.writeToFile(" pic_pos=" + std::to_string(tmpPicPos.x) + ":" + // Position des Knotens im Bild abspeichern
                                            std::to_string(tmpPicPos.y));
-        _fileMgr.writeToFile(" tags=" + n->getTags() + "\n"); // Tags des Knotens speichern
+        _fileMgr.writeToFile(" tags=" + n->getTags() + " \n"); // Tags des Knotens speichern
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
             _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
         }
@@ -185,7 +238,7 @@ void cGraph::info() {
     for(std::size_t i = 0; i < _nodes.size(); i++) { // Durch alle Knoten iterieren
         std::cout << "<" << i << "> ID=" << _nodes.at(i)->getID() << " ADDR=" << _nodes.at(i) << " Verbindungen:" << std::endl;
         for(auto i : _nodes.at(i)->getConnections()) { // Verbindungen des aktuellen Knotens bekommen und durch diese iteriern
-            std::cout << "\t >n.ID=" << i.n->getID() << " n.ADDR=" << i.n << " gew=" << i.weight << std::endl;
+            std::cout << "\t >n.ID=" << i.n->getID() << " n.ADDR=" << i.n << " gew=" << *i.weight << std::endl;
         }
     }
 }
