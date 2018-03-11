@@ -108,14 +108,12 @@ bool cGraph::importGraph(std::string path) {
                 if(_tmpNode != nullptr) { _nodes.push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
                 _tmpStr = _match.str(); // String in der Temporären String Variable speichern zwecks einfacherer Handhabung
                 _tmpTag = _tmpStr.substr(_tmpStr.find("tags") + 4, _tmpStr.size()); // Tags aus dem String extrahieren
-                // !!! pic_pos wird NICHT importiert
-                _tmpStr = _tmpStr.substr(0, _tmpStr.find("pic_pos") - 1); // Alles ab pic_pos verwerfen
-                std::cout << _tmpStr.substr(_tmpStr.find(":") + 1, _tmpStr.size() - 2) << std::endl;
+                // !!! pos wird NICHT importiert
+                _tmpStr = _tmpStr.substr(0, _tmpStr.find("win_pos=")); // Alles ab pos verwerfen
                 _tmpPos.y = std::stof(_tmpStr.substr(_tmpStr.find(":") + 1, _tmpStr.size() - 2)); // Y-Koordinate extrahieren, zu float konvertieren und abspeichern
-                _tmpPos.x = std::stof(_tmpStr.substr(_tmpStr.find("pos=") + 4, _tmpStr.find(":") - 1)); // X-Koordinate extrahieren, zu float konvertieren und abspeichern
-                _tmpStr = _tmpStr.substr(3, _tmpStr.find("pos=") - 4); // ID extrahieren und den Rest verwerfen
+                _tmpPos.x = std::stof(_tmpStr.substr(_tmpStr.find("pic_pos=") + 8, _tmpStr.find(":") - 1)); // X-Koordinate extrahieren, zu float konvertieren und abspeichern
+                _tmpStr = _tmpStr.substr(3, _tmpStr.find(" ") - 3); // ID extrahieren und den Rest verwerfen
                 _tmpNode = new cNode(_tmpStr, _tmpPos, _tmpTag); // Neuen Knoten mit den ausgelesenen Daten einfügen
-
             }
         }
         _nodes.push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
@@ -180,13 +178,13 @@ bool cGraph::exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &
     // TODO: writeToFile Error Handling
     for(auto n : _nodes) { // Durch jeden Eintrag des Node-Vectors iterieren
         _fileMgr.writeToFile("id=" + n->getID()); // ID des aktuellen Knotens in die Datei exportieren
-        _fileMgr.writeToFile(" pos=" + std::to_string(n->getShape().getPosition().x) + ":" + // Position des Knotens im Fenster abspeichern
-                                       std::to_string(n->getShape().getPosition().y));
         tmpPicPos = com::getMousePosPic(sf::Vector2i(n->getShape().getPosition().x, // Position des Knotens auf dem Bild ausrechen
                                                      n->getShape().getPosition().y),
                                                      rWin, tex);
         _fileMgr.writeToFile(" pic_pos=" + std::to_string(tmpPicPos.x) + ":" + // Position des Knotens im Bild abspeichern
                                            std::to_string(tmpPicPos.y));
+        _fileMgr.writeToFile(" win_pos=" + std::to_string(n->getShape().getPosition().x) + ":" + // Position des Knotens im Fenster abspeichern
+                                           std::to_string(n->getShape().getPosition().y));
         _fileMgr.writeToFile(" tags=" + n->getTags() + " \n"); // Tags des Knotens speichern
         for(auto c : n->getConnections()) { // Durch alle Verbindungen des aktuellen Knotens iterieren
             _fileMgr.writeToFile("\t>c_id=" + c.n->getID() + " w=" + std::to_string(*c.weight) + "\n"); // Speichert die ID und die Gewichtung der aktuellen Verbindung
