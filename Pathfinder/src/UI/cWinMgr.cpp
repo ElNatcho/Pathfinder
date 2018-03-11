@@ -42,6 +42,8 @@ void cWinMgr::processEvents() {
     while(_window.pollEvent(_sfEvent)) {
         // ImGui Events verarbeiten
         ImGui::SFML::ProcessEvent(_sfEvent);
+        // Events für cMapViewer verarbeiten
+        _mapViewer.processEvent(_sfEvent);
         // Prüfen ob das Fenster geschlossen wird
         if(_sfEvent.type == sf::Event::Closed) {
             running = false;

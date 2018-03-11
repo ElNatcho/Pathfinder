@@ -7,6 +7,8 @@
 #include"Core/Graph/cGraph.hpp"
 
 #define X_SIZE_RATIO 0.7F
+#define INZOOM_RATIO 0.9F
+#define MOVE_SPEED   25.F
 
 // cMapViewer
 class cMapViewer {
@@ -18,6 +20,8 @@ public:
     // -- Methoden --
     void loadMap(std::string map_path); // Lädt die Bilddatei Welche die Karte darstellt
     void updateView(sf::RenderWindow &rWin); // Updated den Anzeigebereich des Views
+
+    void processEvent(sf::Event sfEvent); // Bearbeitet Events die den View betreffen könnten
 
     void render(sf::RenderWindow &rWin); // Zeichnet die Karte, Knoten und deren Verbindungen
 
