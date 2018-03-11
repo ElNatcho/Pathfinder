@@ -19,6 +19,7 @@ cWinMgr::cWinMgr(std::string map_path, cGraph *g) : _mapViewer(g){
 
     // SearchUI setup
     _searchUI.updateWinSize(_window);
+    _searchUI.initUI();
     ImGui::StyleColorsLight();
 }
 

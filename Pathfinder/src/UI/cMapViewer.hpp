@@ -6,7 +6,7 @@
 #include<iostream>
 #include"Core/Graph/cGraph.hpp"
 
-#define X_SIZE_RATIO 0.7F
+#define X_SIZE_RATIO 0.73F
 #define INZOOM_RATIO 0.9F
 #define MOVE_SPEED   25.F
 
