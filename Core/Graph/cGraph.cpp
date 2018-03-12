@@ -11,6 +11,20 @@ cGraph::cGraph() {
 // Methode fügt einen neuen Knoten hinzu
 // @param n: Knoten der hinzugefügt werden soll
 void cGraph::addNode(cNode *n) {
+    std::string tmpStr;
+    if(n->getID().at(0) != 'h') { // Prüfen ob der Knoten versteckt werden soll
+        _rnums.push_back(n->getID()); // Name des Knotens abspeichern
+        tmpStr = n->getTags(); // Potentielle Tags speichern
+        if(tmpStr != "" && tmpStr != " ") { // Prüfen ob Tags vorhanden sind
+            for(std::size_t i = 0; i < tmpStr.size(); i++) { // Durch die Tags iterieren und diese ggf aufteilen
+                if(tmpStr.at(i) == ':') { // Prüfen ob der String hier getrennt werden soll
+                    _tags.push_back(tmpStr.substr(0, i) + " (" + n->getID() + ")"); // Einzelnen Tag einfügen
+                    tmpStr = tmpStr.substr(i + 1); // Gerade eingefügten Tag entfernen
+                }
+            }
+            _tags.push_back(tmpStr + "(" + n->getID() + ")"); // Letzten Tag einfügen
+        }
+    }
     _nodes.push_back(n); // Neuer Knoten wird in den Vector eingefügt
 }
 
@@ -33,6 +47,18 @@ void cGraph::addConnection(std::string id_1, std::string id_2, float weight) {
         con.n = n1; // Zielknoten in Konten 1 ändern
         n2->addConnection(con); // Verbindung in Knoten 2 einfügen
     }
+}
+
+// -- getNames --
+// Methode gibt alle Namen aller vorhandenen Knoten zurück
+std::vector<std::string> cGraph::getNames() {
+    return _rnums;
+}
+
+// -- getTags --
+// Methode gibt alle Tags aller vorhandenen Knoten zurück
+std::vector<std::string> cGraph::getTags() {
+    return _tags;
 }
 
 // -- findPath --
@@ -105,9 +131,9 @@ bool cGraph::importGraph(std::string path) {
 
             } else if(std::regex_search(str, _match, _createNode_pattern)) { // Prüfen ob in der aktuellen Zeile ein neuer Knoten erstellt wird
 
-                if(_tmpNode != nullptr) { _nodes.push_back(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
+                if(_tmpNode != nullptr) { this->addNode(_tmpNode); } // Falls der temporäre Knoten auf ein Objekt zeigt dieses abspeichern
                 _tmpStr = _match.str(); // String in der Temporären String Variable speichern zwecks einfacherer Handhabung
-                _tmpTag = _tmpStr.substr(_tmpStr.find("tags") + 4, _tmpStr.size()); // Tags aus dem String extrahieren
+                _tmpTag = _tmpStr.substr(_tmpStr.find("tags") + 5, _tmpStr.size() - 1); // Tags aus dem String extrahieren
                 // !!! pos wird NICHT importiert
                 _tmpStr = _tmpStr.substr(0, _tmpStr.find("win_pos=")); // Alles ab pos verwerfen
                 _tmpPos.y = std::stof(_tmpStr.substr(_tmpStr.find(":") + 1, _tmpStr.size() - 2)); // Y-Koordinate extrahieren, zu float konvertieren und abspeichern
@@ -116,7 +142,7 @@ bool cGraph::importGraph(std::string path) {
                 _tmpNode = new cNode(_tmpStr, _tmpPos, _tmpTag); // Neuen Knoten mit den ausgelesenen Daten einfügen
             }
         }
-        _nodes.push_back(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
+        this->addNode(_tmpNode); // Zuletzt erstellten Knoten in den Knoten Vektor eintragen
         std::pair<std::string, std::pair<std::string, float>> c; // Temporärer speicher für Verbindungsinformationen
         while(_conVec.size() > 0){ // Durch alle Verbindungsinformatione iterieren
             c = _conVec.at(0);

@@ -22,7 +22,7 @@
 class cSearchUI {
 public:
     // -- Kon/Destruktor --
-    cSearchUI();
+    cSearchUI(cGraph *g);
     ~cSearchUI();
 
     // -- Methoden --
@@ -38,6 +38,8 @@ private:
 
     char *_raumnummer_it; // Wert des Raumnummer-Inputfeldes
     char *_tag_it; // Wert des Tag-Inputfeldes
+
+    cGraph *_graph; // Zeiger auf den aktuellen Graphen
 
 };
 

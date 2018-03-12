@@ -1,7 +1,8 @@
 #include"cSearchUI.hpp"
 
 // -- Konstruktor --
-cSearchUI::cSearchUI() {
+// @param g: Graph der gerade dargestellt wird
+cSearchUI::cSearchUI(cGraph *g) {
     // Alloc Mem
     _raumnummer_it = new char[MAX_RNUM_LEN];
     _tag_it = new char[MAX_TAG_LEN];
@@ -9,6 +10,7 @@ cSearchUI::cSearchUI() {
     // Werte setzen
     _raumnummer_it[0] = '\0';
     _tag_it[0] = '\0';
+    _graph = g;
 
 }
 
@@ -51,29 +53,38 @@ void cSearchUI::render(sf::RenderWindow &rWin) {
     // Anleitung für den USER Anzeigen
     ImGui::Text("-=+ HowTo: +=-");
     ImGui::Separator();
-    ImGui::BulletText("Orte suchen:");
-    ImGui::Indent();
-    ImGui::BulletText("Ein Ort kann über seine Tags(z.B. Essen, Toileten, etc)\noder ggf. seine Raumnummer gesucht werden");
-    ImGui::BulletText("Um einen Raum über seinen Tag zu suchen muss man den \ngesuchten Tag in das Tag-Suchfeld eingeben");
-    ImGui::BulletText("Um einen Raum über seine Raumnummer zu suchen muss man \ndie gesuchte Raumnummer in das Raumnummer-Suchfeld eingeben");
-    ImGui::BulletText("Zusätzlich werden in den Boxen neben den jeweiligen \nSuchfeldern alle möglichen Eingaben angezeigt");
-    ImGui::Unindent();
-    ImGui::BulletText("Manipulation der Karte:");
-    ImGui::Indent();
-    ImGui::BulletText("Zoomen kann man mithilfe der + und - Taste beim \nNummernblock");
-    ImGui::BulletText("Die Karte kann mit den Pfeiltasten bewegt werden\n\n");
-    ImGui::Unindent();
+    // Header für die "Orte suchen" Hilfe
+    if(ImGui::CollapsingHeader("Orte suchen")) {
+        ImGui::Indent();
+        ImGui::BulletText("Ein Ort kann über seine Tags(z.B. Essen, Toileten, etc)\noder ggf. seine Raumnummer gesucht werden");
+        ImGui::BulletText("Um einen Raum über seinen Tag zu suchen muss man den \ngesuchten Tag in das Tag-Suchfeld eingeben");
+        ImGui::BulletText("Um einen Raum über seine Raumnummer zu suchen muss man \ndie gesuchte Raumnummer in das Raumnummer-Suchfeld eingeben");
+        ImGui::BulletText("Zusätzlich werden in den Boxen neben den jeweiligen \nSuchfeldern alle möglichen Eingaben angezeigt");
+        ImGui::Unindent();
+    }
+    // Header für die "Manipulation der Karte" Hilfe
+    if(ImGui::CollapsingHeader("Manipulation der Karte")) {
+        ImGui::Indent();
+        ImGui::BulletText("Zoomen kann man mithilfe der + und - Taste beim \nNummernblock");
+        ImGui::BulletText("Die Karte kann mit den Pfeiltasten bewegt werden\n\n");
+        ImGui::Unindent();
+    }
+
+    ImGui::Text("");
 
     // Suchfelder
     ImGui::Text("-=+ Ort suchen +=-");
     ImGui::Separator();
     ImGui::Text("");
 
+    ImGui::BeginGroup(); // RNUM_Group Anfang
     // Raumnummer-Auflistungsbox
     ImGui::BulletText("Suchen via Raumnummer:");
     ImGui::Indent();
     ImGui::BeginChild("left_pane_rnum", ImVec2(RNUM_LP_X_RATIO * _winBounds.z, RNUM_LP_Y_RATIO * _winBounds.w), true);
-    ImGui::Text("lol");
+    for(std::string s : _graph->getNames()) { // Durch alle Raumnummern iterieren
+        ImGui::Selectable(s.c_str(), false);
+    }
     ImGui::EndChild();
 
     ImGui::SameLine();
@@ -82,18 +93,22 @@ void cSearchUI::render(sf::RenderWindow &rWin) {
     ImGui::BeginGroup();
     ImGui::Text("Raumnummer:");
     ImGui::PushItemWidth(RNUM_IT_X_RATIO * _winBounds.z);
-    ImGui::InputText("", _raumnummer_it, MAX_RNUM_LEN);
+    ImGui::InputText("#rnum_it", _raumnummer_it, MAX_RNUM_LEN);
     ImGui::PopItemWidth();
     ImGui::EndGroup();
     ImGui::Unindent();
+    ImGui::EndGroup(); // RNUM_Group Ende
 
     ImGui::Text("");
 
+    ImGui::BeginGroup(); // TAG_Group Anfang
     // Tags-Auflistungsbox
     ImGui::BulletText("Suchen via Tag:");
     ImGui::Indent();
     ImGui::BeginChild("left_pane_tags", ImVec2(RNUM_LP_X_RATIO * _winBounds.z, RNUM_LP_Y_RATIO * _winBounds.w), true);
-    ImGui::Text("lol");
+    for(std::string s : _graph->getTags()) { // Durch alle Tags iterieren
+        ImGui::Selectable(s.c_str(), false);
+    }
     ImGui::EndChild();
 
     ImGui::SameLine();
@@ -102,10 +117,11 @@ void cSearchUI::render(sf::RenderWindow &rWin) {
     ImGui::BeginGroup();
     ImGui::Text("Tag:");
     ImGui::PushItemWidth(RNUM_IT_X_RATIO * _winBounds.z);
-    ImGui::InputText("", _tag_it, MAX_TAG_LEN);
+    ImGui::InputText("#tag_it", _tag_it, MAX_TAG_LEN);
     ImGui::PopItemWidth();
     ImGui::EndGroup();
     ImGui::Unindent();
+    ImGui::EndGroup(); // Tag_Group Ende
 
     ImGui::Text("");
 

@@ -1,9 +1,23 @@
-id=r1 pic_pos=225.585938:263.041656 win_pos=125.000000:107.000015 tags=t1 
-	>c_id=r3 w=1.000000
-	>c_id=r2 w=3.000000
-id=r2 pic_pos=234.609375:417.916656 win_pos=130.000000:170.000000 tags=t2 
-	>c_id=r1 w=3.000000
-	>c_id=r3 w=5.000000
-id=r3 pic_pos=304.992188:275.333344 win_pos=169.000000:112.000000 tags=t3 
-	>c_id=r1 w=1.000000
-	>c_id=r2 w=5.000000
+id=E39 pic_pos=220.171875:245.833344 win_pos=122.000000:100.000000 tags=Essen:Trinken 
+	>c_id=E38 w=5.000000
+	>c_id=h_n1 w=1.000000
+id=E38 pic_pos=221.976562:326.958313 win_pos=123.000000:133.999985 tags=Merch 
+	>c_id=E37 w=5.000000
+	>c_id=E39 w=5.000000
+	>c_id=h_n1 w=2.000000
+id=E37 pic_pos=220.171875:417.916656 win_pos=122.000000:170.000000 tags=Treffpunkt 
+	>c_id=WC_Damen w=13.000000
+	>c_id=E38 w=5.000000
+	>c_id=E36 w=5.000000
+id=E36 pic_pos=221.976562:501.500000 win_pos=123.000000:204.000000 tags=Treffpunkt 
+	>c_id=E37 w=5.000000
+id=WC_Damen pic_pos=384.398438:398.250000 win_pos=213.000000:162.999985 tags=WC Damen 
+	>c_id=E37 w=13.000000
+	>c_id=WC_Herren w=1.000000
+	>c_id=h_n1 w=10.000000
+id=WC_Herren pic_pos=416.882812:398.250000 win_pos=231.000000:162.999985 tags=WC Herren 
+	>c_id=WC_Damen w=1.000000
+id=h_n1 pic_pos=256.265625:270.416656 win_pos=142.000000:110.000015 tags= 
+	>c_id=WC_Damen w=10.000000
+	>c_id=E39 w=1.000000
+	>c_id=E38 w=2.000000

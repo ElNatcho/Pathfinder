@@ -3,7 +3,7 @@
 // -- Konstruktor --
 // @param map_path: Pfad zur/Name der Datei welche die Karte beinhaltet
 // @param g       : Zeiger zum Graphen der Karte
-cWinMgr::cWinMgr(std::string map_path, cGraph *g) : _mapViewer(g){
+cWinMgr::cWinMgr(std::string map_path, cGraph *g) : _mapViewer(g), _searchUI(g) {
     // Werte setzen und Fenster erstellen
     _window.create(sf::VideoMode(1280, 720), "Pathfinder"); // Fenster erstellen
     running = true;
@@ -69,7 +69,7 @@ void cWinMgr::update() {
 void cWinMgr::render() {
     _window.clear(sf::Color::White);
 
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 
     // Search UI zeichnen
     _searchUI.render(_window);
@@ -78,7 +78,7 @@ void cWinMgr::render() {
     ImGui::SFML::Render(_window);
 
     // Karte, Knoten und deren Verbindungen zeichnen
-    _mapViewer.render(_window);
+    //_mapViewer.render(_window);
 
     _window.display();
 }

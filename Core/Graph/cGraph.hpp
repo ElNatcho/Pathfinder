@@ -24,6 +24,9 @@ public:
     void addNode(cNode *n); // Methode fügt einen neuen Knoten hinzu
     void addConnection(std::string id_1, std::string id_2, float weight); // Methode fügt eine Verbindung zwischen zwei Knoten hinzu
 
+    std::vector<std::string> getNames(); // Gibt alle vorhandenen Knotennamen zurück
+    std::vector<std::string> getTags();  // Gibt alle vorhandenen Tags zurück
+
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
     bool exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &tex); // Exportiert einen Graphen aus einer Datei
 
@@ -60,6 +63,9 @@ private:
     std::regex _createConnection_pattern; // Ausdruck drückt Strings aus die eine neue Verbindung erstellen
 
     std::vector<cNode*> _selectedNodes; // Speichert ausgewählte Knoten
+
+    std::vector<std::string> _rnums; // Speichert alle Raumnummern
+    std::vector<std::string> _tags;  // Speichert alle Tags
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück
