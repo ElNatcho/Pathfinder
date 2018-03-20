@@ -1,4 +1,5 @@
 #include"cFileMgr.hpp"
+#include"../common.hpp"
 
 // -- Konstruktor --
 cFileMgr::cFileMgr() {

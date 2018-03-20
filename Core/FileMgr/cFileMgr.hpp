@@ -6,7 +6,6 @@
 #include<fstream>
 #include<string>
 #include<vector>
-#include"../common.hpp"
 
 // cFileMgr
 class cFileMgr {

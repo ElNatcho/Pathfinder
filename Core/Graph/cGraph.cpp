@@ -1,4 +1,5 @@
 #include"cGraph.hpp"
+#include"../common.hpp"
 
 // -- Konstruktor --
 cGraph::cGraph() {
@@ -61,6 +62,25 @@ std::vector<std::string> cGraph::getTags() {
     return _tags;
 }
 
+// -- setRootNode --
+// Methode wählt den Root-Knoten aus
+// @param id: ID des Root-Knotens
+bool cGraph::setRootNode(std::string id) {
+    _rootNode = nullptr; // Root-Knoten zurücksetzen
+    _rootNode = _getNode(id); // Versuchen den Knoten zu finden
+    if (_rootNode != nullptr) { // Prüfen ob alles geklappt hat
+        _rootNode->setAsRoot(); //
+        return true;
+    }
+    return false;
+}
+
+// -- getRootNode --
+// Methode gibt die Root-Node zurück
+cNode cGraph::getRootNode() {
+    return *_rootNode;
+}
+
 // -- findPath --
 // Methode findet den schnellsten Pfad zwischen zwei Knoten
 // @param id_s: Source Knoten (Startknoten)
@@ -92,6 +112,16 @@ void cGraph::findPath(std::string id_s, std::string id_d) {
             }
         }
     } while(true);
+}
+
+// -- resetPath --
+// Methode setzt alle Knoten auf deren standard Aussehen zurück
+void cGraph::resetPath() {
+    for (cNode *n : _nodes) { // Durch alle Knoten iterieren
+        if(n != _rootNode) { // Nicht den Root-Knoten ändern
+            n->resetShapeColor();
+        }
+    }
 }
 
 // -- importGraph --
@@ -293,6 +323,7 @@ cNode* cGraph::_getNode(std::string id) {
 // Methode initialisiert die Entfernungen zu allen anderen Knoten
 // @param snode: Startpunkt des aktuell gesuchten Pfades
 bool cGraph::_initDistances(std::string snode) {
+    _dist.clear(); // Distanz-Map zurücksetzen
     for(auto n : _nodes) { _dist.insert(std::make_pair(n->getID(), distData{-1, nullptr, false})); } // Alle Knoten in die dist-Map mit unbekannter Entfernung einfügen
     _dIt = _dist.find(snode); // Startknoten suchen und im Iterator speichern
     if(_dIt != _dist.end()) { // Prüfen ob der Knoten gefunden wurde
@@ -339,8 +370,10 @@ bool cGraph::_doStep(std::string id) {
 void cGraph::_evaluatePath(std::string id_s, std::string id_d) {
     _dIt = _dist.find(id_d); // Zielknoten finden
     do {
-        std::cout << _dIt->first << " < ";
+        //std::cout << _dIt->first << " < ";
         if(_dIt->first == id_s) { break; } // Beim Startknoten abbrechen
+        _getNode(_dIt->first)->setShapeColor(sf::Color::Green); // Knotenfarbe verändern
+        _getNode(_dIt->first)->setConnectionColor(sf::Color::Green, _dIt->second.origin->getID()); // Verbindungsfarbe verändern
         _dIt = _dist.find(_dIt->second.origin->getID()); // Ursprungsknoten finden
     } while(true);
     std::cout << std::endl;

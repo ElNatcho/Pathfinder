@@ -1,4 +1,5 @@
 #include"cNode.hpp"
+#include"../common.hpp"
 
 // -- Konstruktor --
 // @param id      : ID des Knotens
@@ -75,6 +76,43 @@ cNode::CLICK_TYPE cNode::toggleSelectIfClicked(sf::Vector2f mousePos) {
         return toggleSelect();
     }
     return CLICK_TYPE::NCL;
+}
+
+// -- setShapeColor --
+// Methode legt die Farbe des Shapes fest
+// @param c: Neue Farbe des Shapes
+void cNode::setShapeColor(sf::Color c) {
+    _nodeSpr.setFillColor(c);
+}
+
+// -- setConnectionColor --
+// Methode legt die Farbe einer bestimmten Verbindung fest
+// @param col: Neue Farbe der Verbindung
+// @param id : Id des Verbundenen Knotens
+void cNode::setConnectionColor(sf::Color col, std::string id) {
+    for(sConnection c : _connections) { // Durch alle Verbindungen iterieren
+        if(c.n->getID() == id) { // Prüfen ob der gesucht Knoten gefunden wurde
+            c.con->operator[](0).color = col;
+            c.con->operator[](1).color = col;
+        }
+    }
+}
+
+// -- resetShapeColor --
+// Methode setzt die Farbe des Shapes und aller Verbindungen auf den Standard zurück
+void cNode::resetShapeColor() {
+    _nodeSpr.setFillColor(sf::Color::Red); // Shape-Farbe zurücksetzen
+    for(sConnection c : _connections) { // Durch alle Verbindungen iterieren
+        // Farbe der Verbindungen zurücksetzen
+        c.con->operator[](0).color = sf::Color::Black;
+        c.con->operator[](1).color = sf::Color::Black;
+    }
+}
+
+// -- setAsRoot --
+// Methode setzt diesen Knoten als Root-Knoten
+void cNode::setAsRoot() {
+    _nodeSpr.setFillColor(sf::Color(227, 139, 25));
 }
 
 // -- Destruktor --

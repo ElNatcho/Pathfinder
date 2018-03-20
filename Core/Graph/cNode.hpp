@@ -5,7 +5,6 @@
 #include<vector>
 #include<string>
 #include<SFML/Graphics.hpp>
-#include"../common.hpp"
 
 // cNode
 class cNode {
@@ -40,6 +39,12 @@ public:
 
     CLICK_TYPE toggleSelect(); // Methode ändert den Select-Status des Knoten und gibt den Klick-Status zurück
     CLICK_TYPE toggleSelectIfClicked(sf::Vector2f mousePos); // Updated den Knoten falls er angeklickt wurde
+
+    void setShapeColor(sf::Color c); // Methode legt die Farbe des Shapes fest
+    void setConnectionColor(sf::Color c, std::string id); // Methode legt die Farbe einer bestimmten Verbindung fest
+    void resetShapeColor(); // Setzt die Farbe des Shapes und aller Verbindungen auf den Standard zurück
+
+    void setAsRoot(); // Legt diesen Knoten als Root-Knoten fest
 
 private:
 

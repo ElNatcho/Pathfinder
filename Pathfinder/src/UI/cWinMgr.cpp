@@ -69,7 +69,7 @@ void cWinMgr::update() {
 void cWinMgr::render() {
     _window.clear(sf::Color::White);
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     // Search UI zeichnen
     _searchUI.render(_window);
@@ -78,7 +78,7 @@ void cWinMgr::render() {
     ImGui::SFML::Render(_window);
 
     // Karte, Knoten und deren Verbindungen zeichnen
-    //_mapViewer.render(_window);
+    _mapViewer.render(_window);
 
     _window.display();
 }

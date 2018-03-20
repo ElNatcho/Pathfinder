@@ -26,11 +26,14 @@ public:
 
     std::vector<std::string> getNames(); // Gibt alle vorhandenen Knotennamen zurück
     std::vector<std::string> getTags();  // Gibt alle vorhandenen Tags zurück
+    bool  setRootNode(std::string id); // Wählt den Root-Knoten aus
+    cNode getRootNode();
 
     bool importGraph(std::string path); // Importiert einen Graphen aus einer Datei
     bool exportGraph(std::string path, sf::RenderWindow &rWin, sf::Texture &tex); // Exportiert einen Graphen aus einer Datei
 
     void findPath(std::string id_s, std::string id_d); // Methode findet den schnellsten Pfad zwischen zwei Knoten
+    void resetPath(); // Methode setzt alle Knoten aufs deren standard Aussehen zurück
 
     bool checkNodeSelect(sf::Vector2f mousePos); // Prüft ob ein Knoten angeklickt wurde
     std::vector<cNode*> getSelectedNodes(); // Gibt die aktuell ausgewählten Knoten zurück
@@ -64,8 +67,11 @@ private:
 
     std::vector<cNode*> _selectedNodes; // Speichert ausgewählte Knoten
 
+    // UI-Stuff
     std::vector<std::string> _rnums; // Speichert alle Raumnummern
     std::vector<std::string> _tags;  // Speichert alle Tags
+
+    cNode *_rootNode; // Ausgangsknoten an dem das Navi steht
 
     // -- Private Methods --
     cNode* _getNode(std::string id); // Gibt einen Knoten mit einer bestimmten ID zurück

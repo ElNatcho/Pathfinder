@@ -7,6 +7,7 @@
 #include<imgui-SFML.h>
 #include<iostream>
 #include"Core/Graph/cGraph.hpp"
+#include"Core/common.hpp"
 
 #define X_WIN_RATIO 0.27 // Relative Breite des UI Fenster
 
@@ -40,6 +41,16 @@ private:
     char *_tag_it; // Wert des Tag-Inputfeldes
 
     cGraph *_graph; // Zeiger auf den aktuellen Graphen
+
+    ImGuiTextFilter _rnum_infilter; // Inputfilter für die eingegebenen Raumnummern
+    ImGuiTextFilter _tags_infilter; // Inputfilter für die eingegebenen Tags
+
+    int _loopCount; // Counter für die beiden foreach-Loops
+    int _selectedRnum; // Speichert den aktuell ausgewählten Raum
+    int _selectedTag; // Speichert den aktuell ausgewählten Raum
+
+    // -- Private Methods --
+    void _executeSearchPath(); // Methode startet die Suche für den kürzesten Weg zu einem bestimmten Knoten
 
 };
 
