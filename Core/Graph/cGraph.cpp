@@ -374,6 +374,7 @@ void cGraph::_evaluatePath(std::string id_s, std::string id_d) {
         if(_dIt->first == id_s) { break; } // Beim Startknoten abbrechen
         _getNode(_dIt->first)->setShapeColor(sf::Color::Green); // Knotenfarbe verändern
         _getNode(_dIt->first)->setConnectionColor(sf::Color::Green, _dIt->second.origin->getID()); // Verbindungsfarbe verändern
+        _getNode(_dIt->second.origin->getID())->setConnectionColor(sf::Color::Green, _dIt->first);
         _dIt = _dist.find(_dIt->second.origin->getID()); // Ursprungsknoten finden
     } while(true);
     std::cout << std::endl;
